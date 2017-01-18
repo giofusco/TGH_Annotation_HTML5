@@ -9,9 +9,25 @@
     <script type="text/javascript" src="./scripts/main.js"></script>
     <style>
       .panel-resizable {
-            resize: horizontal;
-          overflow: auto
+          resize: all;
+          overflow: auto;
         }
+   
+      div.wrap {
+        height:500px;
+        width:950px;
+        overflow:auto;
+        position: absolute;
+        background-color: gray;
+        display: block;
+      }
+
+      iframe.canvas_container{
+        overflow: auto;
+        position: absolute;
+        border:0;
+        display: block;
+      }
     </style>
   </head><body>
     <div class="navbar navbar-default navbar-static-top">
@@ -46,12 +62,17 @@
             </div>
           </div>
         </div>
+        <!-- ***** MAIN SECTION STARTS HERE -->
         <div class="section text-center">
           <div class="container">
             <div class="row">
               <div class="col-md-10 text-center">
-                <iframe id="canvas_container"><body topmargin="25" leftmargin="25"></body></iframe>
-                
+                <div class="wrap">
+                  <!-- *** IFRAME HERE *** -->
+                  <iframe class="canvas_container" id="canvas_container"><html> <style> body { overflow: scroll; border: 0; text-align:
+                    center; } </style> <body topmargin="1" leftmargin="1"> </body>
+                    </html></iframe>
+                </div>
               </div>
               <div class="col-md-2">
                 <div class="panel panel-primary text-center" id="panel_tools">

@@ -2,6 +2,8 @@
 var UNDEF = -100;
 var ERASER = 100;
 var PEN = 101;
+
+var DEBUG = 1;
  
 // ****************** ANNOTATION TOOL - CLASS DEFINITION *********************
 // it handles the user interface
@@ -113,7 +115,7 @@ Layer.prototype.addInteractionLayer = function(x,y,w,h) {
     this.interactionCanvas.onmouseup = function(e){ that.interactionLayer_mouseup(e);};
     this.interactionCanvas.onmousedown = function(e){ that.interactionLayer_mousedown(e);};
     this.interactionCanvas.onmouseout = function(e){ that.interactionLayer_mouseout(e);};
-    $("#canvas_container").contents().find("#interaction_canvas").data('scale', 1.);
+    $("#canvas_container").contents().find("#interaction_canvas").data('scale', 100);
     $("#canvas_container").contents().find("#interaction_canvas").data('orig_width', w);
     $("#canvas_container").contents().find("#interaction_canvas").data('orig_height', h);
      
@@ -127,8 +129,10 @@ Layer.prototype.imageLoaded = function(x,y) {
 
     if (!this.bkgroundInitialized){
         this.bkgroundInitialized = true;
-        document.getElementById("canvas_container").height = $(window).height()*.7;
-        document.getElementById("canvas_container").width = $(window).width()*.7;
+        document.getElementById("canvas_container").height = this.canvas.height + 10;
+        document.getElementById("canvas_container").width = this.canvas.width + 10;
+        //document.getElementById("canvas_container").height = $(window).height()*.7;
+        //document.getElementById("canvas_container").width = $(window).width()*.7;
     }
     
     // centers the canvas -- not sure if it affects reflow
@@ -416,80 +420,110 @@ function mouseWheelHandler(e) {
     }
     //zoom canvas
     else if (e.altKey){ //TODO: do this for all the layers 
-        var newscale = 0;
+        handleZoomImage(delta);
+    }
+}
+
+
+function handleZoomImage(delta){
+    console.log("Delta " + delta);
+    var scale = 0;
+
+    origWidth = $("#canvas_container").contents().find("#interaction_canvas").data('orig_width');
+    origHeight = $("#canvas_container").contents().find("#interaction_canvas").data('orig_height');
+
+    var prevScale = $("#canvas_container").contents().find("#interaction_canvas").data('scale');
         if (delta>0)
-            newscale = $("#canvas_container").contents().find("#interaction_canvas").data('scale') + 0.10;
+            scale =  prevScale + 10;
         else if (delta < 0){
-            newscale = $("#canvas_container").contents().find("#interaction_canvas").data('scale') - 0.10;
-            if (newscale < .1)
-                newscale = 0.1;
+            scale = prevScale - 10;
+            if (scale < .1)
+                scale = 10;
         }
 
-        newscale = (newscale);
-        console.log(newscale);
+
       
         // let w = iframeDoc.getElementById("interaction_canvas").width;
         // let h = iframeDoc.getElementById("interaction_canvas").height;
 
-        $("#canvas_container").contents().find("#interaction_canvas").data('scale', newscale);
+        $("#canvas_container").contents().find("#interaction_canvas").data('scale', scale);
+
+        //divide scale by 100 to be used by canvas
+        prevScale = (prevScale/100);
+        scale = (scale/100);
+        console.log("Previous Scale: ", prevScale);
+        console.log("New Scale: ", scale);
+
         var iframeDoc = document.getElementById("canvas_container").contentWindow.document;
         var oldCanvas = annTool.layers[0].interactionCanvas.toDataURL("image/png");
         var img = new Image();
         img.src = oldCanvas;
-        
-        iframeDoc.getElementById("interaction_canvas").width = 
-                iframeDoc.getElementById("interaction_canvas").width * newscale;
-        iframeDoc.getElementById("interaction_canvas").height = 
-                iframeDoc.getElementById("interaction_canvas").height * newscale;
-        
-        var ctx = annTool.layers[0].interactionCanvas.getContext("2d");
-        ctx.save();
-        ctx.scale(newscale,newscale);
-        ctx.drawImage(img, 0, 0);
-        ctx.restore();
 
-        for (i = 0; i<annTool.layers.length; i++){
-            if (i!=0){
-                var oldCanvas = annTool.layers[i].canvas.toDataURL("image/png");
-                var img = new Image();
-                img.src = oldCanvas;
-            }
+        document.getElementById("canvas_container").style.transform = "scale("+scale+")";
+        document.getElementById("canvas_container").style.transformOrigin = "0 0";
+        
+        // iframeDoc.getElementById("interaction_canvas").width = 
+        //         origWidth * scale;
+        // iframeDoc.getElementById("interaction_canvas").height = 
+        //         origHeight * scale;
+        
+        // var ctx = annTool.layers[0].interactionCanvas.getContext("2d");
+        // ctx.save();
+
+        // //specifies the reduction or enlargment factor relative to the zoom direction 
+        // var relativeScale = 1;
+        // if (delta > 0)
+        //     relativeScale = 1.1;
+        // else
+        //     relativeScale = 0.9;
+
+        // //redraws the brush pointer on the interaction canvas
+        // ctx.drawImage(img, 0, 0);
+        // ctx.restore();
+
+
+        // //resize all the annotation layers
+        // for (i = 0; i<annTool.layers.length; i++){
+
+        //     if (DEBUG){
+        //         console.log("LAYER # " + i + " :: Previous width: " + iframeDoc.getElementById("canvas_"+i).width);
+        //         console.log("LAYER # " + i + " :: Previous height: " + iframeDoc.getElementById("canvas_"+i).height);
+        //     }
+
+        //     if (i!=0){
+        //         var oldCanvas = annTool.layers[i].canvas.toDataURL("image/png");
+        //         var img = new Image();
+        //         img.src = oldCanvas;
+        //     }
            
-            iframeDoc.getElementById("canvas_"+i).width = iframeDoc.getElementById("canvas_"+i).width * newscale;
-            iframeDoc.getElementById("canvas_"+i).height = iframeDoc.getElementById("canvas_"+i).height * newscale;
+        //     iframeDoc.getElementById("canvas_"+i).width = origWidth * scale;
+        //     iframeDoc.getElementById("canvas_"+i).height = origHeight * scale;
 
-            var ctx = annTool.layers[i].canvas.getContext("2d");
-            if (i==0){
-                ctx.save();
-                ctx.scale(newscale,newscale);
-                ctx.drawImage(annTool.layers[i].backgroundImage, 0, 0);
-                ctx.restore();
-            }
-            else
-                ctx.drawImage(img, 0, 0);
-        //    $("#canvas_container").contents().find("#canvas_"+i).width($("#"+annTool.layers[i].name).width*newscale);
-        //    $("#canvas_container").contents().find("#canvas_"+i).height($("#"+annTool.layers[i].name).height*newscale);
-            // var ctx = annTool.layers[i].canvas.getContext("2d");
-            // ctx.save();
+        //     if (DEBUG){
+        //         console.log("LAYER # " + i + " :: Current width: " + iframeDoc.getElementById("canvas_"+i).width);
+        //         console.log("LAYER # " + i + " :: Current height: " + iframeDoc.getElementById("canvas_"+i).height);
+        //     }
 
-            // let w = iframeDoc.getElementById("interaction_canvas").width;
-            // let h = iframeDoc.getElementById("interaction_canvas").height;
-
-            // var savedData = new Image();
-            // if (i!=0)
-            //     savedData.src = annTool.layers[i].canvas.toDataURL("image/png");
-            //     //imageData = ctx.getImageData(0,0,w,h);
-            // ctx.clearRect(0, 0, w, h);
-            // ctx.scale(newscale,newscale);
+        //     var ctx = annTool.layers[i].canvas.getContext("2d");
             
-            // if (i==0)
-            //     ctx.drawImage(annTool.layers[i].backgroundImage, 0, 0);
-            // else
-            //     ctx.drawImage(savedData, 0, 0);
+        //     ctx.save();
+            
+        //     if (i==0){
+        //         //ctx.scale(scale, scale);
+        //         ctx.drawImage(annTool.layers[i].backgroundImage, 0, 0,  origWidth * scale,  origHeight * scale );
+        //     }
+        //     else{
+        //         //ctx.scale(relativeScale, relativeScale);
+        //         ctx.drawImage(img, 0, 0,  origWidth * scale,  origHeight * scale);    
+        //     }
 
-            // ctx.restore();
-        }
+        //     ctx.restore();
+    
+          
+        //}
 
+
+/////////////////////////////////////////// junk below
         // var ctx = annTool.layers[0].canvas.getContext("2d");
         // ctx.save();
         // if (delta>0){
@@ -506,7 +540,6 @@ function mouseWheelHandler(e) {
         // }
         // ctx.drawImage(annTool.layers[0].backgroundImage,0,0);
         // ctx.restore();
-    }
 }
 
  
@@ -531,7 +564,7 @@ function disableAllLayers(){
 }
 
 
-//this function draws a brush cursors that changes size with the width 
+//this function draws a brush cursors that changes size with the width of the brush
 function mouseMoveInteractionLayer(event){
     var iframeDoc = document.getElementById("canvas_container").contentWindow.document;
     ctx = iframeDoc.getElementById("interaction_canvas").getContext("2d");
