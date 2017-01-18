@@ -14,8 +14,8 @@
         }
    
       div.wrap {
-        height:500px;
-        width:950px;
+        height:510px;
+        width:800px;
         overflow:auto;
         position: absolute;
         background-color: gray;
@@ -66,15 +66,15 @@
         <div class="section text-center">
           <div class="container">
             <div class="row">
-              <div class="col-md-10 text-center">
-                <div class="wrap">
+              <div class="col-md-9 text-center">
+                <div class="wrap" id="wrapper">
                   <!-- *** IFRAME HERE *** -->
                   <iframe class="canvas_container" id="canvas_container"><html> <style> body { overflow: scroll; border: 0; text-align:
                     center; } </style> <body topmargin="1" leftmargin="1"> </body>
                     </html></iframe>
                 </div>
               </div>
-              <div class="col-md-2">
+              <div class="col-md-3">
                 <div class="panel panel-primary text-center" id="panel_tools">
                   <div class="panel-heading">
                     <h3 class="panel-title">Tools</h3>
@@ -118,7 +118,12 @@
                     <h3 class="panel-title">Layers</h3>
                   </div>
                   <div class="text-right">
-                    <a href="#" class="btn btn-primary btn-sm disabled" data-toggle="tooltip" id="add_layer" data-original-title="Add new layer"><span class="badge">+</span></a>
+                    <a href="#" class="btn btn-primary btn-sm disabled" data-toggle="tooltip" id="add_layer" data-original-title="Add new layer">
+                    <span class="badge">+</span></a>
+                    <a href="#" class="btn btn-primary btn-sm" data-toggle="tooltip" id="hide_layer" data-original-title="Hide layer">
+                    <span class="badge"><i class="fa fa-lg fa-eye pull-right"></i></span></a>
+                    <a href="#" class="btn btn-primary btn-sm" data-toggle="tooltip" id="remove_layer" data-original-title="Remove layer">
+                    <span class="badge"><i class="fa fa-lg fa-trash pull-right"></i></span></a>
                   </div>
                   <div class="panel-body text-right" id="layers_panel" style="overflow-x: hidden; overflow-y: scroll; height: 200px"></div>
                 </div>

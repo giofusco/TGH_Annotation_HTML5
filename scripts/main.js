@@ -57,11 +57,17 @@ var Layer = function(id, isBkg, annTool){
     this.thumbnail;
     
     //drawing handling variables
-    this.mouseX;
-    this.mouseY;
-    this.lastX;
-    this.lastY;
+    this.mouseX = 0;
+    this.mouseY = 0;
+    this.lastX = 0;
+    this.lastY = 0;
+    
+    //used for scrolling
+    this.curXpos = 0;
+    this.curYpos = 0;
+
     this.isMouseDown=false;
+    this.isRightMB = false;
     this.annotationTool = annTool;  //object that keeps all the draing mode settings          
 
     this.init();    
@@ -111,11 +117,13 @@ Layer.prototype.addInteractionLayer = function(x,y,w,h) {
         
     });
 
-    let that = this
+    let that = this;
     this.interactionCanvas.onmouseup = function(e){ that.interactionLayer_mouseup(e);};
     this.interactionCanvas.onmousedown = function(e){ that.interactionLayer_mousedown(e);};
     this.interactionCanvas.onmouseout = function(e){ that.interactionLayer_mouseout(e);};
+    this.interactionCanvas.oncontextmenu = function(e){ that.interactionLayer_handleRightMouseClick(e);};
     $("#canvas_container").contents().find("#interaction_canvas").data('scale', 100);
+    $("#canvas_container").contents().find("#interaction_canvas").data('isRightMB', false);
     $("#canvas_container").contents().find("#interaction_canvas").data('orig_width', w);
     $("#canvas_container").contents().find("#interaction_canvas").data('orig_height', h);
      
@@ -145,20 +153,49 @@ Layer.prototype.imageLoaded = function(x,y) {
     this.addInteractionLayer(0,0,this.canvas.width,this.canvas.height);
 };
 
+//prevents the menu to show up on right click
+Layer.prototype.interactionLayer_handleRightMouseClick = function(e) {
+    e.preventDefault();
+};
+
 Layer.prototype.interactionLayer_mouseup = function (e) {
     
     canvas =  getSelectedCanvas();
     var pos = {clientX: e.clientX, clientY: e.clientY};
     if (canvas !== undefined)
         canvas.trigger("mouseup",[pos]);
+    else if(this.isRightMB){ 
+        $("#canvas_container").contents().find("#interaction_canvas").data('isRightMB', false);
+        this.isRightMB = false;
+        canvas = $("#canvas_container").contents().find("#canvas_0");
+        canvas.trigger("mouseup",[pos]);
+    }
 };
 
 Layer.prototype.interactionLayer_mousedown = function(e) {
+
+   
+   var isRightMB = this.isRightMB;
+    if ("which" in e)  // Gecko (Firefox), WebKit (Safari/Chrome) & Opera
+        isRightMB = e.which == 3; 
+    else if ("button" in e)  // IE, Opera 
+        isRightMB = e.button == 2; 
     
+    this.isRightMB = isRightMB;
+    if (DEBUG) console.log("INTER LAYER :: MOUSE DOWN :: RIGHTMB = ", isRightMB);
+    $("#canvas_container").contents().find("#interaction_canvas").data('isRightMB', isRightMB);
     canvas =  getSelectedCanvas();
+    
     var pos = {clientX: e.clientX, clientY: e.clientY};
     if (canvas !== undefined)
         canvas.trigger("mousedown",[pos]);
+    //even if no layers are selected, we still wish to scroll  
+    else if(this.isRightMB){ 
+        canvas = $("#canvas_container").contents().find("#canvas_0");
+        canvas.trigger("mousedown",[pos]);
+    }
+
+
 };
 
 Layer.prototype.interactionLayer_mouseout = function(e) {
@@ -167,19 +204,30 @@ Layer.prototype.interactionLayer_mouseout = function(e) {
     var pos = {clientX: e.clientX, clientY: e.clientY};
     if (canvas !== undefined)
         canvas.trigger("mouseout",[pos]);
+    else if(this.isRightMB){ 
+        canvas = $("#canvas_container").contents().find("#canvas_0");
+        canvas.trigger("mouseout",[pos]);
+    }
 };
 
 Layer.prototype.mouseup = function (e, pos) {
     //console.log("mouseup");
+    $("#canvas_container").contents().find("#interaction_canvas").data('isRightMB', false);
+    this.isRightMB = false;
     this.setMousePosition(pos);
     this.isMouseDown = false;
 };
 
 Layer.prototype.mousedown = function(e, pos) {
-    //console.log("mousedown");
+
+    var isRightMB = $("#canvas_container").contents().find("#interaction_canvas").data('isRightMB');
+    
+    if (DEBUG)
+        console.log("Layer MOUSEDOWN :: RIGHTMB = ", isRightMB);
+    
     this.setMousePosition(pos);
-    this.lastX       = this.mouseX;
-    this.lastY       = this.mouseY;
+    // this.lastX       = this.mouseX;
+    // this.lastY       = this.mouseY;
     this.isMouseDown = true;
 };
 
@@ -190,16 +238,32 @@ Layer.prototype.mouseout = function(e, pos) {
 };
 
 Layer.prototype.mousemove = function(e, pos) {
-   
+    var isRightMB = $("#canvas_container").contents().find("#interaction_canvas").data('isRightMB');
+    if (DEBUG)
+        console.log(isRightMB);
     this.setMousePosition(pos);
-    if(this.isMouseDown){
+    if(this.isMouseDown && !isRightMB){
         if (!this.isBackground)
             this.draw();    
     }
+    else if(this.isMouseDown && isRightMB){
+        console.log("should scroll");
+        var wrapper = document.getElementById("wrapper");
+        if (DEBUG) console.log(">> " + (this.lastX - this.mouseX));
+        wrapper.scrollLeft += (this.mouseX - this.lastX)* 1.5;
+        wrapper.scrollTop += (this.mouseY - this.lastY)* 1.5;
+      //  window.scrollTo(iframeDoc.body.scrollLeft + (this.lastX - this.mouseX), iframeDoc.body.scrollTop + (this.lastY - this.mouseY));
+
+    }
+    
+    //this.isRightMB = 0;
+    
 };
 
 Layer.prototype.setMousePosition = function(e) {
     var rect         = this.canvas.getBoundingClientRect();
+    this.lastX = this.mouseX;
+    this.lastY = this.mouseY;
     this.mouseX      = parseInt(e.clientX-rect.left);
     this.mouseY      = parseInt(e.clientY-rect.top);
 };
@@ -272,7 +336,8 @@ Layer.prototype.addLayerToPanel = function(){
     }
     else{
         layer_item.innerHTML = "<hr><input type=\"color\" id=\"html5colorpicker_" + this.id +"\" value=\""+color +"\" style=\"width:25%;\">"+
-        "<label class=\"pull-left\" contenteditable=\"true\">Layer " + this.id + "</label> <a id=\"remove_layer\" href=\"#\"><i class=\"fa fa-lg fa-trash pull-right\"></i></a>";
+        "<label class=\"pull-left\" contenteditable=\"true\">Layer " + this.id + "</label> ";
+        
     }
     $("#layers_panel").prepend(layer_item);
     this.annotationTool.brushColor = color;
@@ -284,7 +349,7 @@ Layer.prototype.addLayerToPanel = function(){
 };
 
 
-//sets up handlers for event on dynamic elements (info_layer)
+//sets up handlers for events on dynamic elements (info_layer)
 Layer.prototype.setupHandlers = function() {
     //mouse hovering
     $(".info_layer").hover(function(){
@@ -417,6 +482,9 @@ function mouseWheelHandler(e) {
         interactionEvent.clientY = e.clientY;
         //forces update of the mouse cursor when the size changes   
         mouseMoveInteractionLayer(interactionEvent);
+        //prevent default event action
+        e.preventDefault();
+
     }
     //zoom canvas
     else if (e.altKey){ //TODO: do this for all the layers 
@@ -442,10 +510,6 @@ function handleZoomImage(delta){
         }
 
 
-      
-        // let w = iframeDoc.getElementById("interaction_canvas").width;
-        // let h = iframeDoc.getElementById("interaction_canvas").height;
-
         $("#canvas_container").contents().find("#interaction_canvas").data('scale', scale);
 
         //divide scale by 100 to be used by canvas
@@ -462,84 +526,7 @@ function handleZoomImage(delta){
         document.getElementById("canvas_container").style.transform = "scale("+scale+")";
         document.getElementById("canvas_container").style.transformOrigin = "0 0";
         
-        // iframeDoc.getElementById("interaction_canvas").width = 
-        //         origWidth * scale;
-        // iframeDoc.getElementById("interaction_canvas").height = 
-        //         origHeight * scale;
         
-        // var ctx = annTool.layers[0].interactionCanvas.getContext("2d");
-        // ctx.save();
-
-        // //specifies the reduction or enlargment factor relative to the zoom direction 
-        // var relativeScale = 1;
-        // if (delta > 0)
-        //     relativeScale = 1.1;
-        // else
-        //     relativeScale = 0.9;
-
-        // //redraws the brush pointer on the interaction canvas
-        // ctx.drawImage(img, 0, 0);
-        // ctx.restore();
-
-
-        // //resize all the annotation layers
-        // for (i = 0; i<annTool.layers.length; i++){
-
-        //     if (DEBUG){
-        //         console.log("LAYER # " + i + " :: Previous width: " + iframeDoc.getElementById("canvas_"+i).width);
-        //         console.log("LAYER # " + i + " :: Previous height: " + iframeDoc.getElementById("canvas_"+i).height);
-        //     }
-
-        //     if (i!=0){
-        //         var oldCanvas = annTool.layers[i].canvas.toDataURL("image/png");
-        //         var img = new Image();
-        //         img.src = oldCanvas;
-        //     }
-           
-        //     iframeDoc.getElementById("canvas_"+i).width = origWidth * scale;
-        //     iframeDoc.getElementById("canvas_"+i).height = origHeight * scale;
-
-        //     if (DEBUG){
-        //         console.log("LAYER # " + i + " :: Current width: " + iframeDoc.getElementById("canvas_"+i).width);
-        //         console.log("LAYER # " + i + " :: Current height: " + iframeDoc.getElementById("canvas_"+i).height);
-        //     }
-
-        //     var ctx = annTool.layers[i].canvas.getContext("2d");
-            
-        //     ctx.save();
-            
-        //     if (i==0){
-        //         //ctx.scale(scale, scale);
-        //         ctx.drawImage(annTool.layers[i].backgroundImage, 0, 0,  origWidth * scale,  origHeight * scale );
-        //     }
-        //     else{
-        //         //ctx.scale(relativeScale, relativeScale);
-        //         ctx.drawImage(img, 0, 0,  origWidth * scale,  origHeight * scale);    
-        //     }
-
-        //     ctx.restore();
-    
-          
-        //}
-
-
-/////////////////////////////////////////// junk below
-        // var ctx = annTool.layers[0].canvas.getContext("2d");
-        // ctx.save();
-        // if (delta>0){
-        //     let newscale = $("#interaction_canvas").data('scale') + 0.1;
-        //     ctx.scale(newscale,newscale);
-        //     $("#interaction_canvas").data('scale', newscale);
-        // }
-        // else{
-        //     let newscale = $("#interaction_canvas").data('scale') - 0.1;
-        //     if (newscale < .1)
-        //         newscale = 0.1;
-        //     ctx.scale(newscale,newscale);
-        //     $("#interaction_canvas").data('scale', newscale);
-        // }
-        // ctx.drawImage(annTool.layers[0].backgroundImage,0,0);
-        // ctx.restore();
 }
 
  
@@ -566,6 +553,7 @@ function disableAllLayers(){
 
 //this function draws a brush cursors that changes size with the width of the brush
 function mouseMoveInteractionLayer(event){
+
     var iframeDoc = document.getElementById("canvas_container").contentWindow.document;
     ctx = iframeDoc.getElementById("interaction_canvas").getContext("2d");
     ctx.globalCompositeOperation = "source-over";
@@ -594,13 +582,17 @@ function mouseMoveInteractionLayer(event){
         //var id = (selID.slice(11, 100));
         currCanvas.trigger("mousemove", [pos]);
     }
+    else{
+        canvas = $("#canvas_container").contents().find("#canvas_0");
+        canvas.trigger("mousemove",[pos]);
+    }
 }
 
 //this function expects in input a string exactly like this: "selected_layer_ID" and returns the canvas with id ID
 function getSelectedCanvas(){
 
     var selected_layer_id = $("#canvas_container").contents().find("#interaction_canvas").data('selected_layer_id');
-    if (selected_layer_id !== undefined){
+    if (selected_layer_id !== undefined && selected_layer_id != "-1"){
         var id = (selected_layer_id.slice(11, 100));
        return $("#canvas_container").contents().find("#canvas_"+id);
     }
