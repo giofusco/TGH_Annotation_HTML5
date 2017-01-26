@@ -26,13 +26,102 @@ AnnotationTool.prototype.decreaseBrushSize = function(){
         this.brushSize = 1;
 };
  
-AnnotationTool.prototype.addNewLayer = function(){
+AnnotationTool.prototype.addNewLayer = function(label, type){
     var nextId = this.layers.length;
     this.layers[nextId] = new Layer(nextId, false, this);
     let w = this.layers[0].backgroundImage.width;
     let h = this.layers[0].backgroundImage.height;
     this.layers[nextId].setupCanvas(0, 0, w, h);
-    this.layers[nextId].addLayerToPanel();
+    this.layers[nextId].addLayerToPanel(label, type);
+};
+
+AnnotationTool.prototype.hideLayer = function() {
+    var selected_layer_id = $("#canvas_container").contents().find("#interaction_canvas").data('selected_layer_id');
+    if (selected_layer_id !== undefined && selected_layer_id != "-1"){
+        var id = (selected_layer_id.slice(11, 100));
+        this.layers[id].visible = !this.layers[id].visible;
+        if (this.layers[id].visible){
+            this.layers[id].canvas.style.display="";
+            document.getElementById("hidden_layer_icon_"+id).style.display = "none";
+        }
+        else{
+            this.layers[id].canvas.style.display="none";
+            document.getElementById("hidden_layer_icon_"+id).style.display = "";
+            // <i class="fa fa-2x fa-eye pull-left"></i>
+            //add hidden icon
+        }
+    }
+};
+
+AnnotationTool.prototype.removeLayer = function() {
+    var selected_layer_id = $("#canvas_container").contents().find("#interaction_canvas").data('selected_layer_id');
+    var id = (selected_layer_id.slice(11, 100));
+    this.layers[id].visible = false;
+    this.layers[id].removed = true;
+    this.layers[id].canvas.style.display="none";
+    document.getElementById("info_layer_"+id).style.display = "none";
+};
+
+AnnotationTool.prototype.setupLayers = function(gtType) {
+    annTool.addNewLayer("Title", "text");
+    annTool.addNewLayer("Caption", "text");
+    
+    switch(gtType){
+
+        case "Line Graph":
+            annTool.addNewLayer("X axis", "line");
+            annTool.addNewLayer("X axis label", "text");
+            annTool.addNewLayer("X tickmarks", "line");
+            annTool.addNewLayer("X tick labels", "text");
+            annTool.addNewLayer("X grid line", "line");
+            annTool.addNewLayer("Y axis", "line");
+            annTool.addNewLayer("Y axis label", "text");
+            annTool.addNewLayer("Y tickmarks", "line");
+            annTool.addNewLayer("Y tick labels", "text");
+            annTool.addNewLayer("Y grid line", "line");
+            annTool.addNewLayer("Data line", "line");
+            break;
+        
+        case "Bar Graph":
+            annTool.addNewLayer("X axis", "line");
+            annTool.addNewLayer("X axis label", "text");
+            annTool.addNewLayer("X tickmarks", "line");
+            annTool.addNewLayer("X tick labels", "text");
+            annTool.addNewLayer("X grid line", "line");
+            annTool.addNewLayer("Y axis", "line");
+            annTool.addNewLayer("Y axis label", "text");
+            annTool.addNewLayer("Y tickmarks", "line");
+            annTool.addNewLayer("Y tick labels", "text");
+            annTool.addNewLayer("Y grid line", "line");
+            annTool.addNewLayer("Data bars", "line");
+            break;
+        
+        case "Pie Chart":
+            annTool.addNewLayer("Wedges", "area");
+            annTool.addNewLayer("Labels", "text");
+        break;
+        
+        case "Scatter Plot":
+            annTool.addNewLayer("X axis", "line");
+            annTool.addNewLayer("X axis label", "text");
+            annTool.addNewLayer("X tickmarks", "line");
+            annTool.addNewLayer("X tick labels", "text");
+            annTool.addNewLayer("X grid line", "line");
+            annTool.addNewLayer("Y axis", "line");
+            annTool.addNewLayer("Y axis label", "text");
+            annTool.addNewLayer("Y tickmarks", "line");
+            annTool.addNewLayer("Y tick labels", "text");
+            annTool.addNewLayer("Y grid line", "line");
+            annTool.addNewLayer("Data points", "point");
+            break;
+        
+        case "Map":
+        break;
+        case "Drawing":
+            break;
+        case "Other":
+        break;
+    }
 };
  
  
@@ -55,6 +144,8 @@ var Layer = function(id, isBkg, annTool){
     this.isBackground = isBkg;
     this.backgroundImage;
     this.thumbnail;
+    this.visible = true;
+    this.removed = false;
     
     //drawing handling variables
     this.mouseX = 0;
@@ -149,7 +240,7 @@ Layer.prototype.imageLoaded = function(x,y) {
 
     this.canvasContext = this.canvas.getContext("2d");
     this.canvasContext.drawImage(this.backgroundImage,0,0);
-    this.addLayerToPanel();
+    this.addLayerToPanel('');
     this.addInteractionLayer(0,0,this.canvas.width,this.canvas.height);
 };
 
@@ -243,11 +334,11 @@ Layer.prototype.mousemove = function(e, pos) {
         console.log(isRightMB);
     this.setMousePosition(pos);
     if(this.isMouseDown && !isRightMB){
-        if (!this.isBackground)
+        if (!this.isBackground && this.visible)
             this.draw();    
     }
     else if(this.isMouseDown && isRightMB){
-        console.log("should scroll");
+       if (DEBUG) console.log("scroll");
         var wrapper = document.getElementById("wrapper");
         if (DEBUG) console.log(">> " + (this.lastX - this.mouseX));
         wrapper.scrollLeft += (this.mouseX - this.lastX)* 1.5;
@@ -323,7 +414,9 @@ Layer.prototype.setupBackgroundLayer = function(filename) {
  
 
  //adds the layer entry in the panel, also adds functionalities to each entry
-Layer.prototype.addLayerToPanel = function(){
+Layer.prototype.addLayerToPanel = function(label){
+    if (label === '')
+        label = "Layer " + this.id;
      
     //panel = document.getElementById("layers_panel");
     layer_item = document.createElement("div");
@@ -335,8 +428,8 @@ Layer.prototype.addLayerToPanel = function(){
         layer_item.innerHTML = "<hr><label contenteditable=\"true\" class=\"pull-left\">Background</label><div class=\"container\"></div>";
     }
     else{
-        layer_item.innerHTML = "<hr><input type=\"color\" id=\"html5colorpicker_" + this.id +"\" value=\""+color +"\" style=\"width:25%;\">"+
-        "<label class=\"pull-left\" contenteditable=\"true\">Layer " + this.id + "</label> ";
+        layer_item.innerHTML = "<hr><i style=\"display:none\" id=\"hidden_layer_icon_"+ this.id +"\" class=\"fa fa-eye pull-left text-danger\"></i> <input type=\"color\" id=\"html5colorpicker_" + this.id +"\" value=\""+color +"\" style=\"width:25%;\">"+
+        "<label class=\"pull-left\" contenteditable=\"true\">" + label + "</label> ";
         
     }
     $("#layers_panel").prepend(layer_item);
@@ -385,10 +478,29 @@ Layer.prototype.setupHandlers = function() {
  
 var annTool = new AnnotationTool();
  
-// *************** EVENTS HANDLING ********************************
+
+// ********************************** EVENTS HANDLING ***********************************************************************
+// **************************************************************************************************************************
+
 // wait until the DOM is loaded to declare DOM related callbacks
 $(document).ready(function(){
- 
+
+    //handles type selection from the dropdown menu
+    $('.dropdown-inverse li > a').click(function(e){
+        if (this.innerHTML !== "Type"){
+            if (this.innerHTML === "Other"){
+                var type = prompt("Please enter the type:", "");
+                if (type != null) {
+                    $('#type_menu').text(type + "▼");
+                }
+            }
+            else
+                $('#type_menu').text(this.innerHTML + "▼");        
+
+            $("#add_layer").toggleClass('disabled', false);
+            annTool.setupLayers(this.innerHTML);
+        }
+     });
 
  
     $('#tools_form input:radio').on('change', function() {
@@ -405,11 +517,19 @@ $(document).ready(function(){
 
    $("#remove_layer").click(function(){
        // console.log("Erase clicked");
+       var r = confirm("Remove layer?");
+       if (r) annTool.removeLayer();
    });
  
    $("#add_layer").click(function(){
        // console.log("Add layer");
-       annTool.addNewLayer();
+       annTool.addNewLayer('', '');
+ 
+   });
+
+   $("#hide_layer").click(function(){
+       // console.log("Add layer");
+       annTool.hideLayer();
  
    });
  
@@ -433,6 +553,8 @@ $(document).ready(function(){
     });
  
  
+
+    //This binding loads everything after selecting the image from the carousel 
     $("#btn_select").click(function(){
         //TODO: handle reloading of image. Remove canvas and reset layers
  
@@ -443,7 +565,13 @@ $(document).ready(function(){
         annTool.layers[0] = new Layer(0,true, annTool);
         annTool.layers[0].setupBackgroundLayer(currImg);
         //enable add layer button
-        $("#add_layer").toggleClass('disabled', false);
+        //$("#add_layer").toggleClass('disabled', false);
+        $("#tgname_label").attr('contenteditable','true');
+        $("#type_menu").toggleClass('disabled', false);
+        var tgname = prompt("Please enter the TG name:", "");
+        if (tgname != null) {
+            $('#tgname_label').text(tgname);
+        }
     });
  
     //enables all tooltips in the page
@@ -462,8 +590,6 @@ $(document).ready(function(){
     // else bsize_element.attachEvent("onmousewheel", mouseWheelHandler);
 
 });
-
-
 
 function mouseWheelHandler(e) {
     // cross-browser wheel delta

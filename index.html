@@ -9,25 +9,25 @@
     <script type="text/javascript" src="./scripts/main.js"></script>
     <style>
       .panel-resizable {
-          resize: all;
-          overflow: auto;
-        }
-   
-      div.wrap {
-        height:510px;
-        width:800px;
-        overflow:auto;
-        position: absolute;
-        background-color: gray;
-        display: block;
-      }
-
-      iframe.canvas_container{
-        overflow: auto;
-        position: absolute;
-        border:0;
-        display: block;
-      }
+                  resize: all;
+                  overflow: auto;
+                }
+           
+              div.wrap {
+                height:510px;
+                width:800px;
+                overflow:auto;
+                position: absolute;
+                background-color: gray;
+                display: block;
+              }
+        
+              iframe.canvas_container{
+                overflow: auto;
+                position: absolute;
+                border:0;
+                display: block;
+              }
     </style>
   </head><body>
     <div class="navbar navbar-default navbar-static-top">
@@ -59,7 +59,38 @@
                 <!--<div>
                   <a type="button" class="btn btn-default disabled">Save...</a>
                 </div> --></div>
-            </div>
+            </div><div class="panel panel-primary text-left">
+                  <div class="panel-heading">
+                    <h3 class="panel-title">Tactile Graphic Info</h3>
+                  </div>
+                  <div class="panel-body">
+                    <div class="col-md-6">
+                      <p></p>
+                      <h4>TG Name:</h4>
+                      <label contenteditable="false" style="border-style: inset;" id="tgname_label" class="disabled">
+                        enter TG Name
+                      </label>
+                      <p></p>
+                    </div>
+                    <div class="col-md-6">
+                      <p>TG Type:</p>
+
+                      <div class="dropdown">
+                          <button class="btn btn-primary dropdown-toggle disabled" data-toggle="dropdown" id="type_menu" type="button">Type
+                          <span class="caret"></span></button>
+                          <ul class="dropdown-menu dropdown-inverse" role="menu" aria-labelledby="menu1">
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Line Graph</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Bar Graph</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Pie Chart</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Scatter Plot</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Map</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Drawing</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Other</a></li>
+                          </ul>
+                        </div>
+                    </div>
+                  </div>
+                </div>
           </div>
         </div>
         <!-- ***** MAIN SECTION STARTS HERE -->
@@ -67,10 +98,13 @@
           <div class="container">
             <div class="row">
               <div class="col-md-9 text-center">
+                
                 <div class="wrap" id="wrapper">
                   <!-- *** IFRAME HERE *** -->
-                  <iframe class="canvas_container" id="canvas_container"><html> <style> body { overflow: scroll; border: 0; text-align:
-                    center; } </style> <body topmargin="1" leftmargin="1"> </body>
+                  <iframe class="canvas_container" id="canvas_container"><html>
+                    <style>
+                    body { overflow: scroll; border: 0; text-align: center; } </style>
+                    <body topmargin="1" leftmargin="1"></body>
                     </html></iframe>
                 </div>
               </div>
