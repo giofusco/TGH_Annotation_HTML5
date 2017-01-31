@@ -25,6 +25,17 @@ AnnotationTool.prototype.decreaseBrushSize = function(){
     if (this.brushSize <= 0)
         this.brushSize = 1;
 };
+
+AnnotationTool.prototype.findLayerPositionById = function(id) {
+    var pos = -1;
+    var l = 0;
+    while (pos == -1 && l < this.layers.length){
+        if (this.layers[l].id == id)
+            pos = l;
+        else l++;
+    }
+    return pos;  
+};
  
 AnnotationTool.prototype.addNewLayer = function(label, type){
     var nextId = this.layers.length;
@@ -39,13 +50,14 @@ AnnotationTool.prototype.hideLayer = function() {
     var selected_layer_id = $("#canvas_container").contents().find("#interaction_canvas").data('selected_layer_id');
     if (selected_layer_id !== undefined && selected_layer_id != "-1"){
         var id = (selected_layer_id.slice(11, 100));
-        this.layers[id].visible = !this.layers[id].visible;
-        if (this.layers[id].visible){
-            this.layers[id].canvas.style.display="";
+        var pos = this.findLayerPositionById(id);
+        this.layers[pos].visible = !this.layers[pos].visible;
+        if (this.layers[pos].visible){
+            this.layers[pos].canvas.style.display="";
             document.getElementById("hidden_layer_icon_"+id).style.display = "none";
         }
         else{
-            this.layers[id].canvas.style.display="none";
+            this.layers[pos].canvas.style.display="none";
             document.getElementById("hidden_layer_icon_"+id).style.display = "";
             // <i class="fa fa-2x fa-eye pull-left"></i>
             //add hidden icon
@@ -56,63 +68,93 @@ AnnotationTool.prototype.hideLayer = function() {
 AnnotationTool.prototype.removeLayer = function() {
     var selected_layer_id = $("#canvas_container").contents().find("#interaction_canvas").data('selected_layer_id');
     var id = (selected_layer_id.slice(11, 100));
-    this.layers[id].visible = false;
-    this.layers[id].removed = true;
-    this.layers[id].canvas.style.display="none";
-    document.getElementById("info_layer_"+id).style.display = "none";
+    this.removeLayerById(id);
 };
 
+AnnotationTool.prototype.removeLayerById = function(id) {
+    var pos = this.findLayerPositionById(id);
+    this.layers[pos].visible = false;
+    this.layers[pos].removed = true;
+    this.layers[pos].canvas.style.display="none";
+    document.getElementById("info_layer_"+id).style.display = "none";
+    var iframeDoc = document.getElementById("canvas_container").contentWindow.document;
+    var iframeBody = iframeDoc.body;
+    canvas = iframeDoc.getElementById("canvas_"+id);
+    iframeBody.removeChild(canvas);
+    this.layers.splice(pos,1);
+};
+
+AnnotationTool.prototype.removeAllLayers = function(){
+    
+    //need to copy because removeLayerById removes elements from array
+    var tmpLayers = $.extend(true, [], this.layers);
+    for (l=1; l<tmpLayers.length; l++){
+        this.removeLayerById(tmpLayers[l].id);
+    }
+    
+};
+
+
 AnnotationTool.prototype.setupLayers = function(gtType) {
-    annTool.addNewLayer("Title", "text");
-    annTool.addNewLayer("Caption", "text");
+    
+    if (this.layers.length > 0){
+        ans = confirm("Would you like to remove all previous layers?");
+        if (ans){
+            // remove all layers from panel and remove canvas from HTML
+            this.removeAllLayers();
+        }
+    }
+
+    this.addNewLayer("Title", "text");
+    this.addNewLayer("Caption", "text");
     
     switch(gtType){
 
         case "Line Graph":
-            annTool.addNewLayer("X axis", "line");
-            annTool.addNewLayer("X axis label", "text");
-            annTool.addNewLayer("X tickmarks", "line");
-            annTool.addNewLayer("X tick labels", "text");
-            annTool.addNewLayer("X grid line", "line");
-            annTool.addNewLayer("Y axis", "line");
-            annTool.addNewLayer("Y axis label", "text");
-            annTool.addNewLayer("Y tickmarks", "line");
-            annTool.addNewLayer("Y tick labels", "text");
-            annTool.addNewLayer("Y grid line", "line");
-            annTool.addNewLayer("Data line", "line");
+            this.addNewLayer("X axis", "line");
+            this.addNewLayer("X axis label", "text");
+            this.addNewLayer("X tickmarks", "line");
+            this.addNewLayer("X tick labels", "text");
+            this.addNewLayer("X grid line", "line");
+            this.addNewLayer("Y axis", "line");
+            this.addNewLayer("Y axis label", "text");
+            this.addNewLayer("Y tickmarks", "line");
+            this.addNewLayer("Y tick labels", "text");
+            this.addNewLayer("Y grid line", "line");
+            this.addNewLayer("Data line", "line");
             break;
         
         case "Bar Graph":
-            annTool.addNewLayer("X axis", "line");
-            annTool.addNewLayer("X axis label", "text");
-            annTool.addNewLayer("X tickmarks", "line");
-            annTool.addNewLayer("X tick labels", "text");
-            annTool.addNewLayer("X grid line", "line");
-            annTool.addNewLayer("Y axis", "line");
-            annTool.addNewLayer("Y axis label", "text");
-            annTool.addNewLayer("Y tickmarks", "line");
-            annTool.addNewLayer("Y tick labels", "text");
-            annTool.addNewLayer("Y grid line", "line");
-            annTool.addNewLayer("Data bars", "line");
+            this.addNewLayer("X axis", "line");
+            this.addNewLayer("X axis label", "text");
+            this.addNewLayer("X tickmarks", "line");
+            this.addNewLayer("X tick labels", "text");
+            this.addNewLayer("X grid line", "line");
+            this.addNewLayer("Y axis", "line");
+            this.addNewLayer("Y axis label", "text");
+            this.addNewLayer("Y tickmarks", "line");
+            this.addNewLayer("Y tick labels", "text");
+            this.addNewLayer("Y grid line", "line");
+            this.addNewLayer("Data bars", "line");
             break;
         
         case "Pie Chart":
-            annTool.addNewLayer("Wedges", "area");
-            annTool.addNewLayer("Labels", "text");
+            this.addNewLayer("Wedges", "area");
+            this.addNewLayer("Labels", "text");
         break;
         
         case "Scatter Plot":
-            annTool.addNewLayer("X axis", "line");
-            annTool.addNewLayer("X axis label", "text");
-            annTool.addNewLayer("X tickmarks", "line");
-            annTool.addNewLayer("X tick labels", "text");
-            annTool.addNewLayer("X grid line", "line");
-            annTool.addNewLayer("Y axis", "line");
-            annTool.addNewLayer("Y axis label", "text");
-            annTool.addNewLayer("Y tickmarks", "line");
-            annTool.addNewLayer("Y tick labels", "text");
-            annTool.addNewLayer("Y grid line", "line");
-            annTool.addNewLayer("Data points", "point");
+            this.addNewLayer("X axis", "line");
+            this.addNewLayer("X axis label", "text");
+            this.addNewLayer("X tickmarks", "line");
+            this.addNewLayer("X tick labels", "text");
+            this.addNewLayer("X grid line", "line");
+            this.addNewLayer("Y axis", "line");
+            this.addNewLayer("Y axis label", "text");
+            this.addNewLayer("Y tickmarks", "line");
+            this.addNewLayer("Y tick labels", "text");
+            this.addNewLayer("Y grid line", "line");
+            this.addNewLayer("Data points", "point");
             break;
         
         case "Map":
@@ -661,10 +703,10 @@ function handleInfoLayerClicked(idstring){
     // console.log("I got clicked :: " + id);
     var iframeDoc = document.getElementById("canvas_container").contentWindow.document;
     for (l = 0; l < annTool.layers.length; l++){
-        if (l == id)
-            iframeDoc.getElementById("canvas_"+l).style.pointerEvents = "all";
+        if (annTool.layers[l].id == id)
+            iframeDoc.getElementById("canvas_"+id).style.pointerEvents = "all";
         else
-            iframeDoc.getElementById("canvas_"+l).style.pointerEvents = "none";
+            iframeDoc.getElementById("canvas_"+annTool.layers[l].id).style.pointerEvents = "none";
 
     }
 }
@@ -672,7 +714,7 @@ function handleInfoLayerClicked(idstring){
 function disableAllLayers(){
     var iframeDoc = document.getElementById("canvas_container").contentWindow.document;
     for (l = 0; l < annTool.layers.length; l++)
-        iframeDoc.getElementById("canvas_"+l).style.pointerEvents = "none";
+        iframeDoc.getElementById("canvas_"+annTool.layers[l].id).style.pointerEvents = "none";
     $("#canvas_container").contents().find("#interaction_canvas").data('selected_layer_id', -1);
 }
 
