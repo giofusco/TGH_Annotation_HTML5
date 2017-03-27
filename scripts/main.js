@@ -4,7 +4,57 @@ var ERASER = 100;
 var PEN = 101;
 
 var DEBUG = 1;
- 
+
+var FT_LINE = 200;
+var FT_POINT = 201;
+var FT_AREA = 202;
+var FT_TEXT = 203;
+var FT_SYMBOL = 204;
+
+var FT_type_strings = ["line","point","area","text","symbol"];
+var FT_line_styles_strings = ["solid", "dashed", "dotted", "other"];
+var FT_line_thickness_strings = ["normal", "bold", "thin", "other"];
+var FT_line_purpose_strings = ["Data line", "Axis line", "Thickmark", "Label line", "Grid line", "other"];
+var FT_point_shape_strings = ["Cricle","Square","Cross","X","triangle","other"];
+var FT_point_purpose_strings = ["Data Point", "Location Marker", "Symbol", "Other"];
+var FT_area_texture_strings = ["smooth","bumpy","dotted","lined","other"];
+var FT_text_purpose_strings = ["Title","Caption","Label","other"];
+var FT_symbol_shape_strings = FT_point_shape_strings;
+var FT_symbol_purpose_strings = FT_point_purpose_strings;
+
+
+
+
+
+// ************** HTML CODE FOR FEATURE INFO *********************
+
+var HTML_featureTypeSelector = "<div class=\"dropdown\" style=\"text-align:left\">" 
+    + "<button class=\"btn btn-primary dropdown-toggle\" data-toggle=\"dropdown\" id=\"feature_type_menu_btn\" type=\"button\">Type<span class=\"caret\"></span></button>"
+    + "<ul class=\"feature-type-menu dropdown-menu dropdown-inverse\" role=\"menu\" aria-labelledby=\"menu1\">";
+    for (var i = 0; i < FT_type_strings.length; i++){
+        HTML_featureTypeSelector +="<li role=\"presentation\"><a  role=\"menuitem\" tabindex=\"-1\" href=\"#\">"+FT_type_strings[i]+"</a></li>";
+    }
+    HTML_featureTypeSelector +="</ul></div>";
+
+var HTML_lineStyleSelector = "<div class=\"dropdown\" style=\"text-align:left\">" 
+    + "<button class=\"btn btn-primary dropdown-toggle\" data-toggle=\"dropdown\" id=\"line_style_menu_btn\" type=\"button\">Style<span class=\"caret\"></span></button>"
+    + "<ul class=\"line-style-menu dropdown-menu dropdown-inverse\" role=\"menu\" aria-labelledby=\"menu1\">";
+    for (var i = 0; i < FT_line_styles_strings.length; i++){
+        HTML_lineStyleSelector +="<li role=\"presentation\"><a  role=\"menuitem\" tabindex=\"-1\" href=\"#\">"+FT_line_styles_strings[i]+"</a></li>";
+    }
+    HTML_lineStyleSelector +="</ul></div>";
+
+var HTML_lineThicknessSelector = "<div class=\"dropdown\" style=\"text-align:left\">" 
+    + "<button class=\"btn btn-primary dropdown-toggle\" data-toggle=\"dropdown\" id=\"line_thickness_menu_btn\" type=\"button\">thickness<span class=\"caret\"></span></button>"
+    + "<ul class=\"line-thickness-menu dropdown-menu dropdown-inverse\" role=\"menu\" aria-labelledby=\"menu1\">";
+    for (var i = 0; i < FT_line_thickness_strings.length; i++){
+        HTML_lineThicknessSelector +="<li role=\"presentation\"><a  role=\"menuitem\" tabindex=\"-1\" href=\"#\">"+FT_line_thickness_strings[i]+"</a></li>";
+    }
+    HTML_lineThicknessSelector +="</ul></div>";
+
+
+
+
 // ****************** ANNOTATION TOOL - CLASS DEFINITION *********************
 // it handles the user interface
  
@@ -165,8 +215,8 @@ AnnotationTool.prototype.setupLayers = function(gtType) {
         break;
     }
 };
- 
- 
+
+
 // *********************** LAYER - CLASS DEFINITION ****************************
 // a layer is a combination of bitmap and annotation info
  
@@ -203,6 +253,7 @@ var Layer = function(id, isBkg, annTool){
     this.isRightMB = false;
     this.annotationTool = annTool;  //object that keeps all the draing mode settings          
 
+    this.featureInfo = {};
     this.init();    
 };
 
@@ -470,8 +521,8 @@ Layer.prototype.addLayerToPanel = function(label){
         layer_item.innerHTML = "<hr><label contenteditable=\"true\" class=\"pull-left\">Background</label><div class=\"container\"></div>";
     }
     else{
-        layer_item.innerHTML = "<hr><i style=\"display:none\" id=\"hidden_layer_icon_"+ this.id +"\" class=\"fa fa-eye pull-left text-danger\"></i> <input type=\"color\" id=\"html5colorpicker_" + this.id +"\" value=\""+color +"\" style=\"width:25%;\">"+
-        "<label class=\"pull-left\" contenteditable=\"true\">" + label + "</label> ";
+        layer_item.innerHTML = "<hr><i style=\"display:none\" id=\"hidden_layer_icon_"+ this.id +"\" class=\"fa fa-eye pull-left text-danger\"></i> <input type=\"color\" id=\"html5colorpicker_" + this.id +"\" value=\""+color +"\" style=\"width:25%;\">"
+       + "<label class=\"pull-left\" contenteditable=\"true\">" + label + "</label> ";
         
     }
     $("#layers_panel").prepend(layer_item);
@@ -615,22 +666,71 @@ $(document).ready(function(){
             $('#tgname_label').text(tgname);
         }
     });
+
+
+
+
+
+
+
+    // **************************************************************************************************************
+    //INFO PANEL EVENTS HANDLING
+
+
+    $(document.body).on('click', '.feature-type-menu li a', function (e) {
+        //var selText = $(this).text(); 
+        var currLayerPos = document.getElementById("curr_layer_pos").value;
+        $('#feature_type_menu_btn').text(this.innerHTML + "▼");   
+        annTool.layers[currLayerPos].featureInfo["type"] = this.innerHTML;
+        setupInfoPanel(currLayerPos);
+    });
+
+
+   $(document.body).on('click', '.line-style-menu li a', function (e) {
+        //var selText = $(this).text(); 
+        var currLayerPos = document.getElementById("curr_layer_pos").value;
+        $('#line-style-menu_btn').text(this.innerHTML + "▼");   
+        annTool.layers[currLayerPos].featureInfo["line_style"] = this.innerHTML;
+        setupInfoPanel(currLayerPos);
+    });
+
+   $(document.body).on('click', '.line-thickness-menu li a', function (e) {
+        //var selText = $(this).text(); 
+        var currLayerPos = document.getElementById("curr_layer_pos").value;
+        $('#line-thickness-menu_btn').text(this.innerHTML + "▼");   
+        annTool.layers[currLayerPos].featureInfo["line_thickness"] = this.innerHTML;
+        setupInfoPanel(currLayerPos);
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     
  
     //enables all tooltips in the page
     $('[data-toggle="tooltip"]').tooltip();   
-
-
- // adding mouse scroll button functionality (change brush size)
-    // bsize_element = document.getElementById('plus');
-    // if (bsize_element.addEventListener) {
-    //     // IE9, Chrome, Safari, Opera
-    //     bsize_element.addEventListener("mousewheel", mouseWheelHandler, false);
-    //     // Firefox
-    //     bsize_element.addEventListener("DOMMouseScroll", mouseWheelHandler, false);
-    // }
-    // // IE 6/7/8
-    // else bsize_element.attachEvent("onmousewheel", mouseWheelHandler);
-
 });
 
 function mouseWheelHandler(e) {
@@ -697,17 +797,75 @@ function handleZoomImage(delta){
         
 }
 
+
+
+
+
+
+function infoPanelLine(layerPos){
+
+}
+
+
+
+function setupInfoPanel(layerPos){
+    //var pos = annTool.findLayerPositionById(id);
+    var featureInfo = annTool.layers[layerPos].featureInfo;
+    var panel = document.getElementById('feature_info_panel');
+    panel.innerHTML = "";
+    panel.innerHTML = `<input class="hidden" id="curr_layer_pos" value="` + layerPos + `">`;
+    panel.innerHTML += HTML_featureTypeSelector;
+
+    if (featureInfo["type"] != undefined){
+        $('#feature_type_menu_btn').text(featureInfo["type"] + "▼");   
+        switch(featureInfo["type"]){
+            case "line":
+                panel.innerHTML += HTML_lineStyleSelector;
+                if (featureInfo["line_style"] != undefined)
+                    $('#line_style_menu_btn').text(featureInfo["line_style"] + "▼");   
+                panel.innerHTML += HTML_lineThicknessSelector;
+                break;
+            case "point":
+            break;
+            case "area":
+            break;
+            case "text":
+            break;
+            case "symbol":
+            break;
+
+
+        }
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
  
 function handleInfoLayerClicked(idstring){
     var id = parseInt(idstring.slice(11, 100));
     // console.log("I got clicked :: " + id);
     var iframeDoc = document.getElementById("canvas_container").contentWindow.document;
     for (l = 0; l < annTool.layers.length; l++){
-        if (annTool.layers[l].id == id)
+        if (annTool.layers[l].id == id){
             iframeDoc.getElementById("canvas_"+id).style.pointerEvents = "all";
+            //show layer info in the bottom panel
+            //feature_info_panel
+            setupInfoPanel(l);
+        }
         else
             iframeDoc.getElementById("canvas_"+annTool.layers[l].id).style.pointerEvents = "none";
-
+            //hide layer info in the bottom panel
     }
 }
 
