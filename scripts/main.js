@@ -89,7 +89,7 @@ AnnotationTool.prototype.findLayerPositionById = function(id) {
  
 AnnotationTool.prototype.addNewLayer = function(label, type){
     var nextId = this.layers.length;
-    this.layers[nextId] = new Layer(nextId, false, this);
+    this.layers[nextId] = new Layer(nextId, false, this, type);
     let w = this.layers[0].backgroundImage.width;
     let h = this.layers[0].backgroundImage.height;
     this.layers[nextId].setupCanvas(0, 0, w, h);
@@ -221,7 +221,7 @@ AnnotationTool.prototype.setupLayers = function(gtType) {
 // a layer is a combination of bitmap and annotation info
  
 //ctor 
-var Layer = function(id, isBkg, annTool){
+var Layer = function(id, isBkg, annTool, type){
     var iframeDoc = document.getElementById("canvas_container").contentWindow.document;
     this.canvas = iframeDoc.createElement('canvas');
     this.interactionCanvas;
@@ -253,7 +253,10 @@ var Layer = function(id, isBkg, annTool){
     this.isRightMB = false;
     this.annotationTool = annTool;  //object that keeps all the draing mode settings          
 
+	//dictionary that contains all the attributes of the feature
     this.featureInfo = {};
+    if (type != undefined)
+    	this.featureInfo["type"] = type;
     this.init();    
 };
 
@@ -702,32 +705,6 @@ $(document).ready(function(){
         setupInfoPanel(currLayerPos);
     });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-     
  
     //enables all tooltips in the page
     $('[data-toggle="tooltip"]').tooltip();   
@@ -839,16 +816,6 @@ function setupInfoPanel(layerPos){
     }
 
 }
-
-
-
-
-
-
-
-
-
-
 
 
  
