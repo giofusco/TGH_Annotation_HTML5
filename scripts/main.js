@@ -5,52 +5,40 @@ var PEN = 101;
 
 var DEBUG = 1;
 
-var FT_LINE = 200;
-var FT_POINT = 201;
-var FT_AREA = 202;
-var FT_TEXT = 203;
-var FT_SYMBOL = 204;
-
-var FT_type_strings = ["line","point","area","text","symbol"];
-var FT_line_styles_strings = ["solid", "dashed", "dotted", "other"];
-var FT_line_thickness_strings = ["normal", "bold", "thin", "other"];
-var FT_line_purpose_strings = ["Data line", "Axis line", "Thickmark", "Label line", "Grid line", "other"];
-var FT_point_shape_strings = ["Cricle","Square","Cross","X","triangle","other"];
-var FT_point_purpose_strings = ["Data Point", "Location Marker", "Symbol", "Other"];
-var FT_area_texture_strings = ["smooth","bumpy","dotted","lined","other"];
-var FT_text_purpose_strings = ["Title","Caption","Label","other"];
-var FT_symbol_shape_strings = FT_point_shape_strings;
-var FT_symbol_purpose_strings = FT_point_purpose_strings;
-
-
-
-
 
 // ************** HTML CODE FOR FEATURE INFO *********************
 
-var HTML_featureTypeSelector = "<div class=\"dropdown\" style=\"text-align:left\">" 
-    + "<button class=\"btn btn-primary dropdown-toggle\" data-toggle=\"dropdown\" id=\"feature_type_menu_btn\" type=\"button\">Type<span class=\"caret\"></span></button>"
-    + "<ul class=\"feature-type-menu dropdown-menu dropdown-inverse\" role=\"menu\" aria-labelledby=\"menu1\">";
-    for (var i = 0; i < FT_type_strings.length; i++){
-        HTML_featureTypeSelector +="<li role=\"presentation\"><a  role=\"menuitem\" tabindex=\"-1\" href=\"#\">"+FT_type_strings[i]+"</a></li>";
-    }
-    HTML_featureTypeSelector +="</ul></div>";
+// var HTML_featureTypeSelector = "<div class=\"dropdown\" style=\"text-align:left\">" 
+//     + "<button class=\"btn btn-primary dropdown-toggle\" data-toggle=\"dropdown\" id=\"feature_type_menu_btn\" type=\"button\">Type<span class=\"caret\"></span></button>"
+//     + "<ul class=\"feature-type-menu dropdown-menu dropdown-inverse\" role=\"menu\" aria-labelledby=\"menu1\">";
+//     for (var i = 0; i < FT_type_strings.length; i++){
+//         HTML_featureTypeSelector +="<li role=\"presentation\"><a  role=\"menuitem\" tabindex=\"-1\" href=\"#\">"+FT_type_strings[i]+"</a></li>";
+//     }
+//     HTML_featureTypeSelector +="</ul></div>";
 
-var HTML_lineStyleSelector = "<div class=\"dropdown\" style=\"text-align:left\">" 
-    + "<button class=\"btn btn-primary dropdown-toggle\" data-toggle=\"dropdown\" id=\"line_style_menu_btn\" type=\"button\">Style<span class=\"caret\"></span></button>"
-    + "<ul class=\"line-style-menu dropdown-menu dropdown-inverse\" role=\"menu\" aria-labelledby=\"menu1\">";
-    for (var i = 0; i < FT_line_styles_strings.length; i++){
-        HTML_lineStyleSelector +="<li role=\"presentation\"><a  role=\"menuitem\" tabindex=\"-1\" href=\"#\">"+FT_line_styles_strings[i]+"</a></li>";
-    }
-    HTML_lineStyleSelector +="</ul></div>";
+// var HTML_lineStyleSelector = "<div class=\"dropdown\" style=\"text-align:left\">" 
+//     + "<button class=\"btn btn-primary dropdown-toggle\" data-toggle=\"dropdown\" id=\"line_style_menu_btn\" type=\"button\">Style<span class=\"caret\"></span></button>"
+//     + "<ul class=\"line-style-menu dropdown-menu dropdown-inverse\" role=\"menu\" aria-labelledby=\"menu1\">";
+//     for (var i = 0; i < FT_line_styles_strings.length; i++){
+//         HTML_lineStyleSelector +="<li role=\"presentation\"><a  role=\"menuitem\" tabindex=\"-1\" href=\"#\">"+FT_line_styles_strings[i]+"</a></li>";
+//     }
+//     HTML_lineStyleSelector +="</ul></div>";
 
-var HTML_lineThicknessSelector = "<div class=\"dropdown\" style=\"text-align:left\">" 
-    + "<button class=\"btn btn-primary dropdown-toggle\" data-toggle=\"dropdown\" id=\"line_thickness_menu_btn\" type=\"button\">thickness<span class=\"caret\"></span></button>"
-    + "<ul class=\"line-thickness-menu dropdown-menu dropdown-inverse\" role=\"menu\" aria-labelledby=\"menu1\">";
-    for (var i = 0; i < FT_line_thickness_strings.length; i++){
-        HTML_lineThicknessSelector +="<li role=\"presentation\"><a  role=\"menuitem\" tabindex=\"-1\" href=\"#\">"+FT_line_thickness_strings[i]+"</a></li>";
-    }
-    HTML_lineThicknessSelector +="</ul></div>";
+// var HTML_lineThicknessSelector = "<div class=\"dropdown\" style=\"text-align:left\">" 
+//     + "<button class=\"btn btn-primary dropdown-toggle\" data-toggle=\"dropdown\" id=\"line_thickness_menu_btn\" type=\"button\">thickness<span class=\"caret\"></span></button>"
+//     + "<ul class=\"line-thickness-menu dropdown-menu dropdown-inverse\" role=\"menu\" aria-labelledby=\"menu1\">";
+//     for (var i = 0; i < FT_line_thickness_strings.length; i++){
+//         HTML_lineThicknessSelector +="<li role=\"presentation\"><a  role=\"menuitem\" tabindex=\"-1\" href=\"#\">"+FT_line_thickness_strings[i]+"</a></li>";
+//     }
+//     HTML_lineThicknessSelector +="</ul></div>";
+
+// var HTML_linePurposeSelector = "<div class=\"dropdown\" style=\"text-align:left\">" 
+//     + "<button class=\"btn btn-primary dropdown-toggle\" data-toggle=\"dropdown\" id=\"line_thickness_menu_btn\" type=\"button\">thickness<span class=\"caret\"></span></button>"
+//     + "<ul class=\"line-thickness-menu dropdown-menu dropdown-inverse\" role=\"menu\" aria-labelledby=\"menu1\">";
+//     for (var i = 0; i < FT_line_purpose_strings.length; i++){
+//         HTML_linePurposeSelector +="<li role=\"presentation\"><a  role=\"menuitem\" tabindex=\"-1\" href=\"#\">"+FT_line_purpose_strings[i]+"</a></li>";
+//     }
+//     HTML_lineThicknessSelector +="</ul></div>";
 
 
 
@@ -775,14 +763,38 @@ function handleZoomImage(delta){
 }
 
 
+var FT_LINE = 200;
+var FT_POINT = 201;
+var FT_AREA = 202;
+var FT_TEXT = 203;
+var FT_SYMBOL = 204;
+
+var FT_type_strings = ["line","point","area","text","symbol"];
+var FT_line_styles_strings = ["solid", "dashed", "dotted", "other"];
+var FT_line_thickness_strings = ["normal", "bold", "thin", "other"];
+var FT_line_purpose_strings = ["Data line", "Axis line", "Thickmark", "Label line", "Grid line", "other"];
+var FT_point_shape_strings = ["Circle","Square","Cross","X","triangle","other"];
+var FT_point_purpose_strings = ["Data Point", "Location Marker", "Symbol", "Other"];
+var FT_area_texture_strings = ["smooth","bumpy","dotted","lined","other"];
+var FT_text_purpose_strings = ["Title","Caption","Label","other"];
+var FT_symbol_shape_strings = FT_point_shape_strings;
+var FT_symbol_purpose_strings = FT_point_purpose_strings;
 
 
+function generate_selector_HTML(strings_list, class_id, button_id, default_string) {
+    var html_body = "<div class=\"dropdown\" style=\"text-align:left\">" 
+    + "<button class=\"btn btn-primary dropdown-toggle\" data-toggle=\"dropdown\" id=\"" + button_id +"\" type=\"button\">"+ default_string
+    + "<span class=\"caret\"></span></button>"
+    + "<ul class=\""+ class_id +" dropdown-menu dropdown-inverse\" role=\"menu\" aria-labelledby=\"menu1\">";
+    for (var i = 0; i < strings_list.length; i++)
+        html_body +="<li role=\"presentation\"><a  role=\"menuitem\" tabindex=\"-1\" href=\"#\">"+strings_list[i]+"</a></li>";
+    return html_body;
+}
 
 
 function infoPanelLine(layerPos){
 
 }
-
 
 
 function setupInfoPanel(layerPos){
@@ -791,27 +803,27 @@ function setupInfoPanel(layerPos){
     var panel = document.getElementById('feature_info_panel');
     panel.innerHTML = "";
     panel.innerHTML = `<input class="hidden" id="curr_layer_pos" value="` + layerPos + `">`;
-    panel.innerHTML += HTML_featureTypeSelector;
+    panel.innerHTML += generate_selector_HTML(FT_type_strings, 'feature-type-menu', 'feature-type-menu_btn', 'Type');
 
     if (featureInfo["type"] != undefined){
-        $('#feature_type_menu_btn').text(featureInfo["type"] + "▼");   
+        $('#feature-type-menu_btn').text(featureInfo["type"] + "▼");   
         switch(featureInfo["type"]){
             case "line":
-                panel.innerHTML += HTML_lineStyleSelector;
+                panel.innerHTML += generate_selector_HTML(FT_line_styles_strings, 'line-style-menu', 'line-style-menu_btn', 'Style' );
                 if (featureInfo["line_style"] != undefined)
-                    $('#line_style_menu_btn').text(featureInfo["line_style"] + "▼");   
-                panel.innerHTML += HTML_lineThicknessSelector;
+                    $('#line-style-menu_btn').text(featureInfo["line_style"] + "▼");   
+                panel.innerHTML += generate_selector_HTML(FT_line_thickness_strings, 'line-thickness-menu', 'line-thickness-menu_btn', 'Thickness' );
+                if (featureInfo["line_thickness"] != undefined)
+                    $('#line-thickness-menu_btn').text(featureInfo["line_thickness"] + "▼");   
                 break;
             case "point":
-            break;
+                break;
             case "area":
-            break;
+                break;
             case "text":
-            break;
+                break;
             case "symbol":
-            break;
-
-
+                break;
         }
     }
 
@@ -891,11 +903,6 @@ function getSelectedCanvas(){
     }
     else return undefined;
 }
-
-
- 
-
-
 
 
 
