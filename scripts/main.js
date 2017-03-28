@@ -659,13 +659,8 @@ $(document).ready(function(){
     });
 
 
-
-
-
-
-
-    // **************************************************************************************************************
-    //INFO PANEL EVENTS HANDLING
+// **************************************************************************************************************
+//INFO PANEL EVENTS HANDLING
 
 
     $(document.body).on('click', '.feature-type-menu li a', function (e) {
@@ -693,7 +688,61 @@ $(document).ready(function(){
         setupInfoPanel(currLayerPos);
     });
 
+   $(document.body).on('click', '.line-purpose-menu li a', function (e) {
+        //var selText = $(this).text(); 
+        var currLayerPos = document.getElementById("curr_layer_pos").value;
+        $('#line-purpose-menu_btn').text(this.innerHTML + "▼");   
+        annTool.layers[currLayerPos].featureInfo["line_purpose"] = this.innerHTML;
+        setupInfoPanel(currLayerPos);
+    });
+
+   $(document.body).on('click', '.point-shape-menu li a', function (e) {
+        //var selText = $(this).text(); 
+        var currLayerPos = document.getElementById("curr_layer_pos").value;
+        $('#point-shape-menu_btn').text(this.innerHTML + "▼");   
+        annTool.layers[currLayerPos].featureInfo["point_shape"] = this.innerHTML;
+        setupInfoPanel(currLayerPos);
+    });
+
+   $(document.body).on('click', '.point-purpose-menu li a', function (e) {
+        //var selText = $(this).text(); 
+        var currLayerPos = document.getElementById("curr_layer_pos").value;
+        $('#point-purpose-menu_btn').text(this.innerHTML + "▼");   
+        annTool.layers[currLayerPos].featureInfo["point_purpose"] = this.innerHTML;
+        setupInfoPanel(currLayerPos);
+    });
+
+   $(document.body).on('click', '.area-texture-menu li a', function (e) {
+        //var selText = $(this).text(); 
+        var currLayerPos = document.getElementById("curr_layer_pos").value;
+        $('#area-texture-menu_btn').text(this.innerHTML + "▼");   
+        annTool.layers[currLayerPos].featureInfo["area_texture"] = this.innerHTML;
+        setupInfoPanel(currLayerPos);
+    });
+
+    $(document.body).on('click', '.text-purpose-menu li a', function (e) {
+        //var selText = $(this).text(); 
+        var currLayerPos = document.getElementById("curr_layer_pos").value;
+        $('#text-purpose-menu_btn').text(this.innerHTML + "▼");   
+        annTool.layers[currLayerPos].featureInfo["text_purpose"] = this.innerHTML;
+        setupInfoPanel(currLayerPos);
+    });
+
+    $(document.body).on('click', '.symbol-shape-menu li a', function (e) {
+        //var selText = $(this).text(); 
+        var currLayerPos = document.getElementById("curr_layer_pos").value;
+        $('#symbol-shape-menu_btn').text(this.innerHTML + "▼");   
+        annTool.layers[currLayerPos].featureInfo["symbol_shape"] = this.innerHTML;
+        setupInfoPanel(currLayerPos);
+    });
  
+    $(document.body).on('click', '.symbol-purpose-menu li a', function (e) {
+        //var selText = $(this).text(); 
+        var currLayerPos = document.getElementById("curr_layer_pos").value;
+        $('#symbol-purpose-menu_btn').text(this.innerHTML + "▼");   
+        annTool.layers[currLayerPos].featureInfo["symbol_purpose"] = this.innerHTML;
+        setupInfoPanel(currLayerPos);
+    });
     //enables all tooltips in the page
     $('[data-toggle="tooltip"]').tooltip();   
 });
@@ -815,14 +864,35 @@ function setupInfoPanel(layerPos){
                 panel.innerHTML += generate_selector_HTML(FT_line_thickness_strings, 'line-thickness-menu', 'line-thickness-menu_btn', 'Thickness' );
                 if (featureInfo["line_thickness"] != undefined)
                     $('#line-thickness-menu_btn').text(featureInfo["line_thickness"] + "▼");   
+                panel.innerHTML += generate_selector_HTML(FT_line_purpose_strings, 'line-purpose-menu', 'line-purpose-menu_btn', 'Purpose' );
+                if (featureInfo["line_purpose"] != undefined)
+                    $('#line-puropse-menu_btn').text(featureInfo["line_purpose"] + "▼");   
                 break;
             case "point":
+                panel.innerHTML += generate_selector_HTML(FT_point_shape_strings, 'point-shape-menu', 'point-shape-menu_btn', 'Shape' );
+                if (featureInfo["point_shape"] != undefined)
+                    $('#point-shape-menu_btn').text(featureInfo["point_shape"] + "▼");   
+                panel.innerHTML += generate_selector_HTML(FT_point_purpose_strings, 'point-purpose-menu', 'point-purpose-menu_btn', 'Purpose' );
+                if (featureInfo["point_purpose"] != undefined)
+                    $('#point-puropse-menu_btn').text(featureInfo["point_purpose"] + "▼");   
                 break;
             case "area":
+                panel.innerHTML += generate_selector_HTML(FT_area_texture_strings, 'area-texture-menu', 'area-texture-menu_btn', 'Purpose' );
+                if (featureInfo["area_texture"] != undefined)
+                    $('#area-texture-menu_btn').text(featureInfo["area_texture"] + "▼");   
                 break;
             case "text":
+                panel.innerHTML += generate_selector_HTML(FT_text_purpose_strings, 'text-purpose-menu', 'text-purpose-menu_btn', 'Purpose' );
+                if (featureInfo["text_purpose"] != undefined)
+                    $('#text-purpose-menu_btn').text(featureInfo["text_purpose"] + "▼");   
                 break;
             case "symbol":
+                panel.innerHTML += generate_selector_HTML(FT_symbol_shape_strings, 'symbol-shape-menu', 'point-shape-menu_btn', 'Shape' );
+                if (featureInfo["symbol_shape"] != undefined)
+                    $('#symbol-shape-menu_btn').text(featureInfo["symbol_shape"] + "▼");   
+                panel.innerHTML += generate_selector_HTML(FT_symbol_purpose_strings, 'symbol-purpose-menu', 'point-purpose-menu_btn', 'Purpose' );
+                if (featureInfo["symbol_purpose"] != undefined)
+                    $('#symbol-puropse-menu_btn').text(featureInfo["symbol_purpose"] + "▼");   
                 break;
         }
     }
