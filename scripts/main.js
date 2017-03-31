@@ -6,43 +6,6 @@ var PEN = 101;
 var DEBUG = 1;
 
 
-// ************** HTML CODE FOR FEATURE INFO *********************
-
-// var HTML_featureTypeSelector = "<div class=\"dropdown\" style=\"text-align:left\">" 
-//     + "<button class=\"btn btn-primary dropdown-toggle\" data-toggle=\"dropdown\" id=\"feature_type_menu_btn\" type=\"button\">Type<span class=\"caret\"></span></button>"
-//     + "<ul class=\"feature-type-menu dropdown-menu dropdown-inverse\" role=\"menu\" aria-labelledby=\"menu1\">";
-//     for (var i = 0; i < FT_type_strings.length; i++){
-//         HTML_featureTypeSelector +="<li role=\"presentation\"><a  role=\"menuitem\" tabindex=\"-1\" href=\"#\">"+FT_type_strings[i]+"</a></li>";
-//     }
-//     HTML_featureTypeSelector +="</ul></div>";
-
-// var HTML_lineStyleSelector = "<div class=\"dropdown\" style=\"text-align:left\">" 
-//     + "<button class=\"btn btn-primary dropdown-toggle\" data-toggle=\"dropdown\" id=\"line_style_menu_btn\" type=\"button\">Style<span class=\"caret\"></span></button>"
-//     + "<ul class=\"line-style-menu dropdown-menu dropdown-inverse\" role=\"menu\" aria-labelledby=\"menu1\">";
-//     for (var i = 0; i < FT_line_styles_strings.length; i++){
-//         HTML_lineStyleSelector +="<li role=\"presentation\"><a  role=\"menuitem\" tabindex=\"-1\" href=\"#\">"+FT_line_styles_strings[i]+"</a></li>";
-//     }
-//     HTML_lineStyleSelector +="</ul></div>";
-
-// var HTML_lineThicknessSelector = "<div class=\"dropdown\" style=\"text-align:left\">" 
-//     + "<button class=\"btn btn-primary dropdown-toggle\" data-toggle=\"dropdown\" id=\"line_thickness_menu_btn\" type=\"button\">thickness<span class=\"caret\"></span></button>"
-//     + "<ul class=\"line-thickness-menu dropdown-menu dropdown-inverse\" role=\"menu\" aria-labelledby=\"menu1\">";
-//     for (var i = 0; i < FT_line_thickness_strings.length; i++){
-//         HTML_lineThicknessSelector +="<li role=\"presentation\"><a  role=\"menuitem\" tabindex=\"-1\" href=\"#\">"+FT_line_thickness_strings[i]+"</a></li>";
-//     }
-//     HTML_lineThicknessSelector +="</ul></div>";
-
-// var HTML_linePurposeSelector = "<div class=\"dropdown\" style=\"text-align:left\">" 
-//     + "<button class=\"btn btn-primary dropdown-toggle\" data-toggle=\"dropdown\" id=\"line_thickness_menu_btn\" type=\"button\">thickness<span class=\"caret\"></span></button>"
-//     + "<ul class=\"line-thickness-menu dropdown-menu dropdown-inverse\" role=\"menu\" aria-labelledby=\"menu1\">";
-//     for (var i = 0; i < FT_line_purpose_strings.length; i++){
-//         HTML_linePurposeSelector +="<li role=\"presentation\"><a  role=\"menuitem\" tabindex=\"-1\" href=\"#\">"+FT_line_purpose_strings[i]+"</a></li>";
-//     }
-//     HTML_lineThicknessSelector +="</ul></div>";
-
-
-
-
 // ****************** ANNOTATION TOOL - CLASS DEFINITION *********************
 // it handles the user interface
  
@@ -75,13 +38,13 @@ AnnotationTool.prototype.findLayerPositionById = function(id) {
     return pos;  
 };
  
-AnnotationTool.prototype.addNewLayer = function(label, type){
+AnnotationTool.prototype.addNewLayer = function(label, feature_info){
     var nextId = this.layers.length;
-    this.layers[nextId] = new Layer(nextId, false, this, type);
+    this.layers[nextId] = new Layer(nextId, false, this, feature_info);
     let w = this.layers[0].backgroundImage.width;
     let h = this.layers[0].backgroundImage.height;
     this.layers[nextId].setupCanvas(0, 0, w, h);
-    this.layers[nextId].addLayerToPanel(label, type);
+    this.layers[nextId].addLayerToPanel(label);
 };
 
 AnnotationTool.prototype.hideLayer = function() {
@@ -143,56 +106,60 @@ AnnotationTool.prototype.setupLayers = function(gtType) {
         }
     }
 
-    this.addNewLayer("Title", "text");
-    this.addNewLayer("Caption", "text");
-    
+ //    var FT_line_purpose_strings = ["Data line", "Axis line", "Thickmark", "Label line", "Grid line", "other"];
+	// var FT_point_purpose_strings = ["Data Point", "Location Marker", "Symbol", "Other"];
+	// var FT_text_purpose_strings = ["Title","Caption","Label","other"];
+
+    this.addNewLayer("Title", {"type" : "text", "purpose" : "title"});
+    this.addNewLayer("Caption", {"type" : "text", "purpose" : "caption"});
+
     switch(gtType){
 
         case "Line Graph":
-            this.addNewLayer("X axis", "line");
-            this.addNewLayer("X axis label", "text");
-            this.addNewLayer("X tickmarks", "line");
-            this.addNewLayer("X tick labels", "text");
-            this.addNewLayer("X grid line", "line");
-            this.addNewLayer("Y axis", "line");
-            this.addNewLayer("Y axis label", "text");
-            this.addNewLayer("Y tickmarks", "line");
-            this.addNewLayer("Y tick labels", "text");
-            this.addNewLayer("Y grid line", "line");
-            this.addNewLayer("Data line", "line");
+            this.addNewLayer("X axis", {"type" : "line", "purpose" : "Axis line"});
+            this.addNewLayer("X axis label", {"type" : "text", "purpose" : "Label"});
+            this.addNewLayer("X tickmarks", {"type" : "line", "purpose" : "Tickmark"});
+            this.addNewLayer("X tick labels", {"type" : "text", "purpose" : "Label"});
+            this.addNewLayer("X grid line", { "type" : "line", "purpose" : "Grid line"});
+            this.addNewLayer("Y axis", { "type" : "line", "purpose" : "Axis line"});
+            this.addNewLayer("Y axis label", { "type" : "text", "purpose" : "Label"});
+            this.addNewLayer("Y tickmarks", { "type" : "line", "purpose" : "Tickmark"});
+            this.addNewLayer("Y tick labels", { "type" : "text", "purpose" : "Label"});
+            this.addNewLayer("Y grid line", { "type" : "line", "purpose" : "Grid line"});
+            this.addNewLayer("Data line", { "type" : "line", "purpose" : "Data line"});
             break;
         
         case "Bar Graph":
-            this.addNewLayer("X axis", "line");
-            this.addNewLayer("X axis label", "text");
-            this.addNewLayer("X tickmarks", "line");
-            this.addNewLayer("X tick labels", "text");
-            this.addNewLayer("X grid line", "line");
-            this.addNewLayer("Y axis", "line");
-            this.addNewLayer("Y axis label", "text");
-            this.addNewLayer("Y tickmarks", "line");
-            this.addNewLayer("Y tick labels", "text");
-            this.addNewLayer("Y grid line", "line");
-            this.addNewLayer("Data bars", "line");
+            this.addNewLayer("X axis", { "type" : "line", "purpose" : "Axis line"});
+            this.addNewLayer("X axis label", { "type" : "text", "purpose" : "Label"});
+            this.addNewLayer("X tickmarks", { "type" : "line", "purpose" : "Tickmark"});
+            this.addNewLayer("X tick labels", { "type" : "text", "purpose" : "Label"});
+            this.addNewLayer("X grid line", { "type" : "line", "purpose" : "Grid line"});
+            this.addNewLayer("Y axis", { "type" : "line", "purpose" : "Axis line"});
+            this.addNewLayer("Y axis label", { "type" : "text", "purpose" : "Label"});
+            this.addNewLayer("Y tickmarks", { "type" : "line", "purpose" : "Tickmark"});
+            this.addNewLayer("Y tick labels", { "type" : "text", "purpose" : "Label"});
+            this.addNewLayer("Y grid line", { "type" : "line", "purpose" : "Grid line"});
+            this.addNewLayer("Data bars", { "type" : "area"});
             break;
         
         case "Pie Chart":
-            this.addNewLayer("Wedges", "area");
-            this.addNewLayer("Labels", "text");
+            this.addNewLayer("Wedges", { "type" : "area"});
+            this.addNewLayer("Label", { "type" : "text", "purpose":"label"});
         break;
         
         case "Scatter Plot":
-            this.addNewLayer("X axis", "line");
-            this.addNewLayer("X axis label", "text");
-            this.addNewLayer("X tickmarks", "line");
-            this.addNewLayer("X tick labels", "text");
-            this.addNewLayer("X grid line", "line");
-            this.addNewLayer("Y axis", "line");
-            this.addNewLayer("Y axis label", "text");
-            this.addNewLayer("Y tickmarks", "line");
-            this.addNewLayer("Y tick labels", "text");
-            this.addNewLayer("Y grid line", "line");
-            this.addNewLayer("Data points", "point");
+            this.addNewLayer("X axis", {"type" : "line", "purpose" : "Axis line"});
+            this.addNewLayer("X axis label", {"type" : "text", "purpose" : "Label"});
+            this.addNewLayer("X tickmarks", {"type" : "line", "purpose" : "Tickmark"});
+            this.addNewLayer("X tick labels", {"type" : "text", "purpose" : "Label"});
+            this.addNewLayer("X grid line", { "type" : "line", "purpose" : "Grid line"});
+            this.addNewLayer("Y axis", { "type" : "line", "purpose" : "Axis line"});
+            this.addNewLayer("Y axis label", { "type" : "text", "purpose" : "Label"});
+            this.addNewLayer("Y tickmarks", { "type" : "line", "purpose" : "Tickmark"});
+            this.addNewLayer("Y tick labels", { "type" : "text", "purpose" : "Label"});
+            this.addNewLayer("Y grid line", { "type" : "line", "purpose" : "Grid line"});
+            this.addNewLayer("Data point", { "type" : "point", "purpose" : "Data Point"});
             break;
         
         case "Map":
@@ -209,7 +176,7 @@ AnnotationTool.prototype.setupLayers = function(gtType) {
 // a layer is a combination of bitmap and annotation info
  
 //ctor 
-var Layer = function(id, isBkg, annTool, type){
+var Layer = function(id, isBkg, annTool, feature_info){
     var iframeDoc = document.getElementById("canvas_container").contentWindow.document;
     this.canvas = iframeDoc.createElement('canvas');
     this.interactionCanvas;
@@ -243,9 +210,16 @@ var Layer = function(id, isBkg, annTool, type){
 
 	//dictionary that contains all the attributes of the feature
     this.featureInfo = {};
-    if (type != undefined)
-    	this.featureInfo["type"] = type;
+    if (feature_info != undefined){
+    	this.setup_feature_info(feature_info);
+    }
     this.init();    
+};
+
+
+Layer.prototype.setup_feature_info = function(feature_info) {
+	for(var key in feature_info) 
+  		this.featureInfo[key] = feature_info[key];
 };
 
 Layer.prototype.init = function() {
@@ -662,6 +636,8 @@ $(document).ready(function(){
 // **************************************************************************************************************
 //INFO PANEL EVENTS HANDLING
 
+//TODO: reduce hanlders by aggregating them by feature
+
 
     $(document.body).on('click', '.feature-type-menu li a', function (e) {
         //var selText = $(this).text(); 
@@ -676,7 +652,7 @@ $(document).ready(function(){
         //var selText = $(this).text(); 
         var currLayerPos = document.getElementById("curr_layer_pos").value;
         $('#line-style-menu_btn').text(this.innerHTML + "▼");   
-        annTool.layers[currLayerPos].featureInfo["line_style"] = this.innerHTML;
+        annTool.layers[currLayerPos].featureInfo["style"] = this.innerHTML;
         setupInfoPanel(currLayerPos);
     });
 
@@ -684,7 +660,7 @@ $(document).ready(function(){
         //var selText = $(this).text(); 
         var currLayerPos = document.getElementById("curr_layer_pos").value;
         $('#line-thickness-menu_btn').text(this.innerHTML + "▼");   
-        annTool.layers[currLayerPos].featureInfo["line_thickness"] = this.innerHTML;
+        annTool.layers[currLayerPos].featureInfo["thickness"] = this.innerHTML;
         setupInfoPanel(currLayerPos);
     });
 
@@ -692,7 +668,7 @@ $(document).ready(function(){
         //var selText = $(this).text(); 
         var currLayerPos = document.getElementById("curr_layer_pos").value;
         $('#line-purpose-menu_btn').text(this.innerHTML + "▼");   
-        annTool.layers[currLayerPos].featureInfo["line_purpose"] = this.innerHTML;
+        annTool.layers[currLayerPos].featureInfo["purpose"] = this.innerHTML;
         setupInfoPanel(currLayerPos);
     });
 
@@ -700,7 +676,7 @@ $(document).ready(function(){
         //var selText = $(this).text(); 
         var currLayerPos = document.getElementById("curr_layer_pos").value;
         $('#point-shape-menu_btn').text(this.innerHTML + "▼");   
-        annTool.layers[currLayerPos].featureInfo["point_shape"] = this.innerHTML;
+        annTool.layers[currLayerPos].featureInfo["shape"] = this.innerHTML;
         setupInfoPanel(currLayerPos);
     });
 
@@ -708,7 +684,7 @@ $(document).ready(function(){
         //var selText = $(this).text(); 
         var currLayerPos = document.getElementById("curr_layer_pos").value;
         $('#point-purpose-menu_btn').text(this.innerHTML + "▼");   
-        annTool.layers[currLayerPos].featureInfo["point_purpose"] = this.innerHTML;
+        annTool.layers[currLayerPos].featureInfo["purpose"] = this.innerHTML;
         setupInfoPanel(currLayerPos);
     });
 
@@ -716,7 +692,7 @@ $(document).ready(function(){
         //var selText = $(this).text(); 
         var currLayerPos = document.getElementById("curr_layer_pos").value;
         $('#area-texture-menu_btn').text(this.innerHTML + "▼");   
-        annTool.layers[currLayerPos].featureInfo["area_texture"] = this.innerHTML;
+        annTool.layers[currLayerPos].featureInfo["texture"] = this.innerHTML;
         setupInfoPanel(currLayerPos);
     });
 
@@ -724,7 +700,7 @@ $(document).ready(function(){
         //var selText = $(this).text(); 
         var currLayerPos = document.getElementById("curr_layer_pos").value;
         $('#text-purpose-menu_btn').text(this.innerHTML + "▼");   
-        annTool.layers[currLayerPos].featureInfo["text_purpose"] = this.innerHTML;
+        annTool.layers[currLayerPos].featureInfo["purpose"] = this.innerHTML;
         setupInfoPanel(currLayerPos);
     });
 
@@ -732,7 +708,7 @@ $(document).ready(function(){
         //var selText = $(this).text(); 
         var currLayerPos = document.getElementById("curr_layer_pos").value;
         $('#symbol-shape-menu_btn').text(this.innerHTML + "▼");   
-        annTool.layers[currLayerPos].featureInfo["symbol_shape"] = this.innerHTML;
+        annTool.layers[currLayerPos].featureInfo["shape"] = this.innerHTML;
         setupInfoPanel(currLayerPos);
     });
  
@@ -740,9 +716,18 @@ $(document).ready(function(){
         //var selText = $(this).text(); 
         var currLayerPos = document.getElementById("curr_layer_pos").value;
         $('#symbol-purpose-menu_btn').text(this.innerHTML + "▼");   
-        annTool.layers[currLayerPos].featureInfo["symbol_purpose"] = this.innerHTML;
+        annTool.layers[currLayerPos].featureInfo["purpose"] = this.innerHTML;
         setupInfoPanel(currLayerPos);
     });
+
+    $(document.body).on('change', '.quantity', function (e) {
+         //var selText = $(this).text(); 
+        var currLayerPos = document.getElementById("curr_layer_pos").value;
+      
+        annTool.layers[currLayerPos].featureInfo["quantity"] = document.getElementById('quantity-box').value;
+        setupInfoPanel(currLayerPos);
+    });
+
     //enables all tooltips in the page
     $('[data-toggle="tooltip"]').tooltip();   
 });
@@ -812,16 +797,10 @@ function handleZoomImage(delta){
 }
 
 
-var FT_LINE = 200;
-var FT_POINT = 201;
-var FT_AREA = 202;
-var FT_TEXT = 203;
-var FT_SYMBOL = 204;
-
 var FT_type_strings = ["line","point","area","text","symbol"];
 var FT_line_styles_strings = ["solid", "dashed", "dotted", "other"];
 var FT_line_thickness_strings = ["normal", "bold", "thin", "other"];
-var FT_line_purpose_strings = ["Data line", "Axis line", "Thickmark", "Label line", "Grid line", "other"];
+var FT_line_purpose_strings = ["Data line", "Axis line", "Tickmark", "Label line", "Grid line", "other"];
 var FT_point_shape_strings = ["Circle","Square","Cross","X","triangle","other"];
 var FT_point_purpose_strings = ["Data Point", "Location Marker", "Symbol", "Other"];
 var FT_area_texture_strings = ["smooth","bumpy","dotted","lined","other"];
@@ -840,6 +819,11 @@ function generate_selector_HTML(strings_list, class_id, button_id, default_strin
     return html_body;
 }
 
+function generate_input_box_HTML(label_string, class_id, box_id){
+	var html_body = "<div style=\"text-align:left\" class=\"form-group\"> <label for=\"" + box_id + "\">" + label_string + "</label>"
+      			  + "<input align=\"left\" type=\"text\" class=\"" + class_id + "\" id=\"" + box_id + "\" size=\"4\"> </div>";
+    return html_body;
+}
 
 function infoPanelLine(layerPos){
 
@@ -859,40 +843,56 @@ function setupInfoPanel(layerPos){
         switch(featureInfo["type"]){
             case "line":
                 panel.innerHTML += generate_selector_HTML(FT_line_styles_strings, 'line-style-menu', 'line-style-menu_btn', 'Style' );
-                if (featureInfo["line_style"] != undefined)
-                    $('#line-style-menu_btn').text(featureInfo["line_style"] + "▼");   
+                if (featureInfo["style"] != undefined)
+                    $('#line-style-menu_btn').text(featureInfo["style"] + "▼");   
                 panel.innerHTML += generate_selector_HTML(FT_line_thickness_strings, 'line-thickness-menu', 'line-thickness-menu_btn', 'Thickness' );
-                if (featureInfo["line_thickness"] != undefined)
-                    $('#line-thickness-menu_btn').text(featureInfo["line_thickness"] + "▼");   
+                if (featureInfo["thickness"] != undefined)
+                    $('#line-thickness-menu_btn').text(featureInfo["thickness"] + "▼");   
                 panel.innerHTML += generate_selector_HTML(FT_line_purpose_strings, 'line-purpose-menu', 'line-purpose-menu_btn', 'Purpose' );
-                if (featureInfo["line_purpose"] != undefined)
-                    $('#line-puropse-menu_btn').text(featureInfo["line_purpose"] + "▼");   
+                if (featureInfo["purpose"] != undefined)
+                    $('#line-purpose-menu_btn').text(featureInfo["purpose"] + "▼");
+    			panel.innerHTML += generate_input_box_HTML("Quantity", 'quantity', 'quantity-box');
+    			if (featureInfo["quantity"] != undefined)
+                    $('#quantity-box').value(featureInfo["quantity"] + "▼");
+
                 break;
             case "point":
                 panel.innerHTML += generate_selector_HTML(FT_point_shape_strings, 'point-shape-menu', 'point-shape-menu_btn', 'Shape' );
-                if (featureInfo["point_shape"] != undefined)
-                    $('#point-shape-menu_btn').text(featureInfo["point_shape"] + "▼");   
+                if (featureInfo["shape"] != undefined)
+                    $('#point-shape-menu_btn').text(featureInfo["shape"] + "▼");   
                 panel.innerHTML += generate_selector_HTML(FT_point_purpose_strings, 'point-purpose-menu', 'point-purpose-menu_btn', 'Purpose' );
-                if (featureInfo["point_purpose"] != undefined)
-                    $('#point-puropse-menu_btn').text(featureInfo["point_purpose"] + "▼");   
+                if (featureInfo["purpose"] != undefined)
+                    $('#point-purpose-menu_btn').text(featureInfo["purpose"] + "▼");
+                panel.innerHTML += generate_input_box_HTML("Quantity", 'quantity', 'quantity-box');
+    			if (featureInfo["quantity"] != undefined)
+                    $('#quantity-box').value(featureInfo["quantity"] + "▼");
                 break;
             case "area":
                 panel.innerHTML += generate_selector_HTML(FT_area_texture_strings, 'area-texture-menu', 'area-texture-menu_btn', 'Purpose' );
-                if (featureInfo["area_texture"] != undefined)
-                    $('#area-texture-menu_btn').text(featureInfo["area_texture"] + "▼");   
+                if (featureInfo["texture"] != undefined)
+                    $('#area-texture-menu_btn').text(featureInfo["texture"] + "▼");
+                    panel.innerHTML += generate_input_box_HTML("Quantity", 'quantity', 'quantity-box');
+    			if (featureInfo["quantity"] != undefined)
+                    $('#quantity-box').value(featureInfo["quantity"] + "▼");   
                 break;
             case "text":
                 panel.innerHTML += generate_selector_HTML(FT_text_purpose_strings, 'text-purpose-menu', 'text-purpose-menu_btn', 'Purpose' );
-                if (featureInfo["text_purpose"] != undefined)
-                    $('#text-purpose-menu_btn').text(featureInfo["text_purpose"] + "▼");   
+                if (featureInfo["purpose"] != undefined)
+                    $('#text-purpose-menu_btn').text(featureInfo["purpose"] + "▼");
+                    panel.innerHTML += generate_input_box_HTML("Quantity", 'quantity', 'quantity-box');
+    			if (featureInfo["quantity"] != undefined)
+                    $('#quantity-box').value(featureInfo["quantity"] + "▼");   
                 break;
             case "symbol":
                 panel.innerHTML += generate_selector_HTML(FT_symbol_shape_strings, 'symbol-shape-menu', 'point-shape-menu_btn', 'Shape' );
-                if (featureInfo["symbol_shape"] != undefined)
-                    $('#symbol-shape-menu_btn').text(featureInfo["symbol_shape"] + "▼");   
+                if (featureInfo["shape"] != undefined)
+                    $('#symbol-shape-menu_btn').text(featureInfo["shape"] + "▼");   
                 panel.innerHTML += generate_selector_HTML(FT_symbol_purpose_strings, 'symbol-purpose-menu', 'point-purpose-menu_btn', 'Purpose' );
-                if (featureInfo["symbol_purpose"] != undefined)
-                    $('#symbol-puropse-menu_btn').text(featureInfo["symbol_purpose"] + "▼");   
+                if (featureInfo["purpose"] != undefined)
+                    $('#symbol-purpose-menu_btn').text(featureInfo["purpose"] + "▼");
+                    panel.innerHTML += generate_input_box_HTML("Quantity", 'quantity', 'quantity-box');
+    			if (featureInfo["quantity"] != undefined)
+                    $('#quantity-box').value(featureInfo["quantity"] + "▼");   
                 break;
         }
     }
