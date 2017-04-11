@@ -633,6 +633,31 @@ $(document).ready(function(){
     });
 
 
+
+var FT_type_strings = ["line","point","area","text","symbol"];
+var FT_line_styles_strings = ["solid", "dashed", "dotted"];
+var FT_line_thickness_strings = ["normal", "bold", "thin"];
+var FT_line_purpose_strings = ["Data line", "Axis line", "Tickmark", "Label line", "Grid line"];
+var FT_point_shape_strings = ["Circle","Square","Cross","X","triangle"];
+var FT_point_purpose_strings = ["Data Point", "Location Marker", "Symbol"];
+var FT_area_texture_strings = ["smooth","bumpy","dotted","lined"];
+var FT_text_purpose_strings = ["Title","Caption","Label"];
+var FT_symbol_shape_strings = FT_point_shape_strings;
+var FT_symbol_purpose_strings = FT_point_purpose_strings;
+
+var FT_user_defined_type_strings = [];
+var FT_user_defined_line_syles_strings = [];
+var FT_user_defined_line_thickness_strings = [];
+var FT_user_defined_line_purpose_strings = [];
+var FT_user_defined_point_shape_strings = [];
+var FT_user_defined_point_purpose_strings = [];
+var FT_user_defined_area_texture_strings = [];
+var FT_user_defined_text_purporse_string = [];
+var FT_user_defined_point_purpose_strings = [];
+var FT_user_defined_symbol_shape_strings = [];
+var FT_user_defined_symbol_purpose_strings = [];  
+
+
 // **************************************************************************************************************
 //INFO PANEL EVENTS HANDLING
 
@@ -797,19 +822,9 @@ function handleZoomImage(delta){
 }
 
 
-var FT_type_strings = ["line","point","area","text","symbol"];
-var FT_line_styles_strings = ["solid", "dashed", "dotted", "other"];
-var FT_line_thickness_strings = ["normal", "bold", "thin", "other"];
-var FT_line_purpose_strings = ["Data line", "Axis line", "Tickmark", "Label line", "Grid line", "other"];
-var FT_point_shape_strings = ["Circle","Square","Cross","X","triangle","other"];
-var FT_point_purpose_strings = ["Data Point", "Location Marker", "Symbol", "Other"];
-var FT_area_texture_strings = ["smooth","bumpy","dotted","lined","other"];
-var FT_text_purpose_strings = ["Title","Caption","Label","other"];
-var FT_symbol_shape_strings = FT_point_shape_strings;
-var FT_symbol_purpose_strings = FT_point_purpose_strings;
 
 
-function generate_selector_HTML(strings_list, class_id, button_id, default_string) {
+function generate_selector_HTML(strings_list, user_def_strings, class_id, button_id, default_string) {
     var html_body = "<div class=\"dropdown\" style=\"text-align:left\">" 
     + "<button class=\"btn btn-primary dropdown-toggle\" data-toggle=\"dropdown\" id=\"" + button_id +"\" type=\"button\">"+ default_string
     + "<span class=\"caret\"></span></button>"
@@ -836,19 +851,19 @@ function setupInfoPanel(layerPos){
     var panel = document.getElementById('feature_info_panel');
     panel.innerHTML = "";
     panel.innerHTML = `<input class="hidden" id="curr_layer_pos" value="` + layerPos + `">`;
-    panel.innerHTML += generate_selector_HTML(FT_type_strings, 'feature-type-menu', 'feature-type-menu_btn', 'Type');
+    panel.innerHTML += generate_selector_HTML(FT_type_strings, FT_user_defined_type_strings, 'feature-type-menu', 'feature-type-menu_btn', 'Type');
 
     if (featureInfo["type"] != undefined){
         $('#feature-type-menu_btn').text(featureInfo["type"] + "▼");   
         switch(featureInfo["type"]){
             case "line":
-                panel.innerHTML += generate_selector_HTML(FT_line_styles_strings, 'line-style-menu', 'line-style-menu_btn', 'Style' );
+                panel.innerHTML += generate_selector_HTML(FT_line_styles_strings, FT_user_defined_line_syles_strings, 'line-style-menu', 'line-style-menu_btn', 'Style' );
                 if (featureInfo["style"] != undefined)
                     $('#line-style-menu_btn').text(featureInfo["style"] + "▼");   
-                panel.innerHTML += generate_selector_HTML(FT_line_thickness_strings, 'line-thickness-menu', 'line-thickness-menu_btn', 'Thickness' );
+                panel.innerHTML += generate_selector_HTML(FT_line_thickness_strings, FT_user_defined_line_thickness_strings, 'line-thickness-menu', 'line-thickness-menu_btn', 'Thickness' );
                 if (featureInfo["thickness"] != undefined)
                     $('#line-thickness-menu_btn').text(featureInfo["thickness"] + "▼");   
-                panel.innerHTML += generate_selector_HTML(FT_line_purpose_strings, 'line-purpose-menu', 'line-purpose-menu_btn', 'Purpose' );
+                panel.innerHTML += generate_selector_HTML(FT_line_purpose_strings, FT_user_defined_point_purpose_strings, 'line-purpose-menu', 'line-purpose-menu_btn', 'Purpose' );
                 if (featureInfo["purpose"] != undefined)
                     $('#line-purpose-menu_btn').text(featureInfo["purpose"] + "▼");
     			panel.innerHTML += generate_input_box_HTML("Quantity", 'quantity', 'quantity-box');
@@ -857,10 +872,10 @@ function setupInfoPanel(layerPos){
 
                 break;
             case "point":
-                panel.innerHTML += generate_selector_HTML(FT_point_shape_strings, 'point-shape-menu', 'point-shape-menu_btn', 'Shape' );
+                panel.innerHTML += generate_selector_HTML(FT_point_shape_strings, FT_user_defined_point_shape_strings, 'point-shape-menu', 'point-shape-menu_btn', 'Shape' );
                 if (featureInfo["shape"] != undefined)
                     $('#point-shape-menu_btn').text(featureInfo["shape"] + "▼");   
-                panel.innerHTML += generate_selector_HTML(FT_point_purpose_strings, 'point-purpose-menu', 'point-purpose-menu_btn', 'Purpose' );
+                panel.innerHTML += generate_selector_HTML(FT_point_purpose_strings, FT_user_defined_point_purpose_strings, 'point-purpose-menu', 'point-purpose-menu_btn', 'Purpose' );
                 if (featureInfo["purpose"] != undefined)
                     $('#point-purpose-menu_btn').text(featureInfo["purpose"] + "▼");
                 panel.innerHTML += generate_input_box_HTML("Quantity", 'quantity', 'quantity-box');
@@ -868,7 +883,7 @@ function setupInfoPanel(layerPos){
                     $('#quantity-box').value(featureInfo["quantity"] + "▼");
                 break;
             case "area":
-                panel.innerHTML += generate_selector_HTML(FT_area_texture_strings, 'area-texture-menu', 'area-texture-menu_btn', 'Purpose' );
+                panel.innerHTML += generate_selector_HTML(FT_area_texture_strings, FT_user_defined_area_texture_strings, 'area-texture-menu', 'area-texture-menu_btn', 'Purpose' );
                 if (featureInfo["texture"] != undefined)
                     $('#area-texture-menu_btn').text(featureInfo["texture"] + "▼");
                     panel.innerHTML += generate_input_box_HTML("Quantity", 'quantity', 'quantity-box');
@@ -876,7 +891,7 @@ function setupInfoPanel(layerPos){
                     $('#quantity-box').value(featureInfo["quantity"] + "▼");   
                 break;
             case "text":
-                panel.innerHTML += generate_selector_HTML(FT_text_purpose_strings, 'text-purpose-menu', 'text-purpose-menu_btn', 'Purpose' );
+                panel.innerHTML += generate_selector_HTML(FT_text_purpose_strings, FT_user_defined_text_purporse_string, 'text-purpose-menu', 'text-purpose-menu_btn', 'Purpose' );
                 if (featureInfo["purpose"] != undefined)
                     $('#text-purpose-menu_btn').text(featureInfo["purpose"] + "▼");
                     panel.innerHTML += generate_input_box_HTML("Quantity", 'quantity', 'quantity-box');
@@ -884,10 +899,10 @@ function setupInfoPanel(layerPos){
                     $('#quantity-box').value(featureInfo["quantity"] + "▼");   
                 break;
             case "symbol":
-                panel.innerHTML += generate_selector_HTML(FT_symbol_shape_strings, 'symbol-shape-menu', 'point-shape-menu_btn', 'Shape' );
+                panel.innerHTML += generate_selector_HTML(FT_symbol_shape_strings, FT_user_defined_symbol_shape_strings, 'symbol-shape-menu', 'symbol-shape-menu_btn', 'Shape' );
                 if (featureInfo["shape"] != undefined)
                     $('#symbol-shape-menu_btn').text(featureInfo["shape"] + "▼");   
-                panel.innerHTML += generate_selector_HTML(FT_symbol_purpose_strings, 'symbol-purpose-menu', 'point-purpose-menu_btn', 'Purpose' );
+                panel.innerHTML += generate_selector_HTML(FT_symbol_purpose_strings, FT_user_defined_symbol_purpose_strings, 'symbol-purpose-menu', 'symbol-purpose-menu_btn', 'Purpose' );
                 if (featureInfo["purpose"] != undefined)
                     $('#symbol-purpose-menu_btn').text(featureInfo["purpose"] + "▼");
                     panel.innerHTML += generate_input_box_HTML("Quantity", 'quantity', 'quantity-box');
