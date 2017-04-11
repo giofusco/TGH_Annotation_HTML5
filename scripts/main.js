@@ -98,7 +98,7 @@ AnnotationTool.prototype.removeAllLayers = function(){
 
 AnnotationTool.prototype.setupLayers = function(gtType) {
     
-    if (this.layers.length > 0){
+    if (this.layers.length > 1){
         ans = confirm("Would you like to remove all previous layers?");
         if (ans){
             // remove all layers from panel and remove canvas from HTML
@@ -322,8 +322,6 @@ Layer.prototype.interactionLayer_mouseup = function (e) {
 };
 
 Layer.prototype.interactionLayer_mousedown = function(e) {
-
-   
    var isRightMB = this.isRightMB;
     if ("which" in e)  // Gecko (Firefox), WebKit (Safari/Chrome) & Opera
         isRightMB = e.which == 3; 
@@ -667,8 +665,20 @@ var FT_user_defined_symbol_purpose_strings = [];
     $(document.body).on('click', '.feature-type-menu li a', function (e) {
         //var selText = $(this).text(); 
         var currLayerPos = document.getElementById("curr_layer_pos").value;
-        $('#feature_type_menu_btn').text(this.innerHTML + "▼");   
-        annTool.layers[currLayerPos].featureInfo["type"] = this.innerHTML;
+        var tmp_type = this.innerHTML;
+        if (this.innerHTML == "Other" || this.innerHTML == "other"){
+            	type = prompt("enter type:");
+            	if (type != undefined){
+                	FT_user_defined_type_strings.push(type);
+                	$('#feature_type_menu_btn').text(this.innerHTML + "▼");   
+        			annTool.layers[currLayerPos].featureInfo["type"] = type;
+            	}
+
+        }
+        else{
+        	$('#feature_type_menu_btn').text(this.innerHTML + "▼");   
+        	annTool.layers[currLayerPos].featureInfo["type"] = this.innerHTML;
+        }
         setupInfoPanel(currLayerPos);
     });
 
@@ -676,65 +686,161 @@ var FT_user_defined_symbol_purpose_strings = [];
    $(document.body).on('click', '.line-style-menu li a', function (e) {
         //var selText = $(this).text(); 
         var currLayerPos = document.getElementById("curr_layer_pos").value;
-        $('#line-style-menu_btn').text(this.innerHTML + "▼");   
-        annTool.layers[currLayerPos].featureInfo["style"] = this.innerHTML;
-        setupInfoPanel(currLayerPos);
+        var tmp_type = this.innerHTML;
+        if (this.innerHTML == "Other" || this.innerHTML == "other"){
+            	type = prompt("enter line style:");
+            	if (type != undefined){
+                	FT_user_defined_line_style_strings.push(type);
+                	$('#line-style-menu-btn').text(this.innerHTML + "▼");   
+        			annTool.layers[currLayerPos].featureInfo["style"] = type;
+            	}
+
+        }
+        else{
+	        $('#line-style-menu_btn').text(this.innerHTML + "▼");   
+	        annTool.layers[currLayerPos].featureInfo["style"] = this.innerHTML;
+	        setupInfoPanel(currLayerPos);
+	    }
     });
 
    $(document.body).on('click', '.line-thickness-menu li a', function (e) {
         //var selText = $(this).text(); 
         var currLayerPos = document.getElementById("curr_layer_pos").value;
-        $('#line-thickness-menu_btn').text(this.innerHTML + "▼");   
-        annTool.layers[currLayerPos].featureInfo["thickness"] = this.innerHTML;
-        setupInfoPanel(currLayerPos);
+        var tmp_type = this.innerHTML;
+        if (this.innerHTML == "Other" || this.innerHTML == "other"){
+            	type = prompt("enter line thickness:");
+            	if (type != undefined){
+                	FT_user_defined_line_thickness_strings.push(type);
+                	$('#line-thickness-menu_btn').text(this.innerHTML + "▼");   
+        			annTool.layers[currLayerPos].featureInfo["thickness"] = type;
+            	}
+
+        }
+        else{
+	        $('#line-thickness-menu_btn').text(this.innerHTML + "▼");   
+	        annTool.layers[currLayerPos].featureInfo["thickness"] = this.innerHTML;
+	        setupInfoPanel(currLayerPos);
+	    }
     });
 
    $(document.body).on('click', '.line-purpose-menu li a', function (e) {
         //var selText = $(this).text(); 
         var currLayerPos = document.getElementById("curr_layer_pos").value;
-        $('#line-purpose-menu_btn').text(this.innerHTML + "▼");   
-        annTool.layers[currLayerPos].featureInfo["purpose"] = this.innerHTML;
-        setupInfoPanel(currLayerPos);
+        var tmp_type = this.innerHTML;
+        if (this.innerHTML == "Other" || this.innerHTML == "other"){
+            	type = prompt("enter line purpose:");
+            	if (type != undefined){
+                	FT_user_defined_line_purpose_strings.push(type);
+                	$('#line-purpose-menu_btn').text(this.innerHTML + "▼");   
+        			annTool.layers[currLayerPos].featureInfo["purpose"] = type;
+            	}
+
+        }
+        else{
+	        $('#line-purpose-menu_btn').text(this.innerHTML + "▼");   
+	        annTool.layers[currLayerPos].featureInfo["purpose"] = this.innerHTML;
+	        setupInfoPanel(currLayerPos);
+	    }
     });
 
    $(document.body).on('click', '.point-shape-menu li a', function (e) {
         //var selText = $(this).text(); 
         var currLayerPos = document.getElementById("curr_layer_pos").value;
-        $('#point-shape-menu_btn').text(this.innerHTML + "▼");   
-        annTool.layers[currLayerPos].featureInfo["shape"] = this.innerHTML;
-        setupInfoPanel(currLayerPos);
+        var tmp_type = this.innerHTML;
+        if (this.innerHTML == "Other" || this.innerHTML == "other"){
+            	type = prompt("enter point shape:");
+            	if (type != undefined){
+                	FT_user_defined_point_shape_strings.push(type);
+                	$('#point-shape-menu_btn').text(this.innerHTML + "▼");   
+        			annTool.layers[currLayerPos].featureInfo["shape"] = type;
+            	}
+
+        }
+        else{
+	        $('#point-shape-menu_btn').text(this.innerHTML + "▼");   
+	        annTool.layers[currLayerPos].featureInfo["shape"] = this.innerHTML;
+	        setupInfoPanel(currLayerPos);
+	    }
     });
 
    $(document.body).on('click', '.point-purpose-menu li a', function (e) {
         //var selText = $(this).text(); 
         var currLayerPos = document.getElementById("curr_layer_pos").value;
-        $('#point-purpose-menu_btn').text(this.innerHTML + "▼");   
-        annTool.layers[currLayerPos].featureInfo["purpose"] = this.innerHTML;
-        setupInfoPanel(currLayerPos);
+        var tmp_type = this.innerHTML;
+        if (this.innerHTML == "Other" || this.innerHTML == "other"){
+            	type = prompt("enter point purpose:");
+            	if (type != undefined){
+                	FT_user_defined_point_purpose_strings.push(type);
+                	$('#point-purpose-menu_btn').text(this.innerHTML + "▼");   
+        			annTool.layers[currLayerPos].featureInfo["purpose"] = type;
+            	}
+
+        }
+        else{
+	        $('#point-purpose-menu_btn').text(this.innerHTML + "▼");   
+	        annTool.layers[currLayerPos].featureInfo["purpose"] = this.innerHTML;
+	        setupInfoPanel(currLayerPos);
+	    }
     });
 
    $(document.body).on('click', '.area-texture-menu li a', function (e) {
         //var selText = $(this).text(); 
         var currLayerPos = document.getElementById("curr_layer_pos").value;
-        $('#area-texture-menu_btn').text(this.innerHTML + "▼");   
-        annTool.layers[currLayerPos].featureInfo["texture"] = this.innerHTML;
-        setupInfoPanel(currLayerPos);
+        var tmp_type = this.innerHTML;
+        if (this.innerHTML == "Other" || this.innerHTML == "other"){
+            	type = prompt("enter area texture:");
+            	if (type != undefined){
+                	FT_user_defined_area_texture_strings.push(type);
+                	$('#area-texture-menu_btn').text(this.innerHTML + "▼");   
+        			annTool.layers[currLayerPos].featureInfo["texture"] = type;
+            	}
+
+        }
+	        else{
+	        $('#area-texture-menu_btn').text(this.innerHTML + "▼");   
+	        annTool.layers[currLayerPos].featureInfo["texture"] = this.innerHTML;
+	        setupInfoPanel(currLayerPos);
+	    }
     });
 
     $(document.body).on('click', '.text-purpose-menu li a', function (e) {
         //var selText = $(this).text(); 
         var currLayerPos = document.getElementById("curr_layer_pos").value;
-        $('#text-purpose-menu_btn').text(this.innerHTML + "▼");   
-        annTool.layers[currLayerPos].featureInfo["purpose"] = this.innerHTML;
-        setupInfoPanel(currLayerPos);
+        var tmp_type = this.innerHTML;
+        if (this.innerHTML == "Other" || this.innerHTML == "other"){
+            	type = prompt("enter text purpose:");
+            	if (type != undefined){
+                	FT_user_defined_text_purpose_strings.push(type);
+                	$('#text-purpose-menu_btn').text(this.innerHTML + "▼");   
+        			annTool.layers[currLayerPos].featureInfo["purpose"] = type;
+            	}
+
+        }
+        else{
+	        $('#text-purpose-menu_btn').text(this.innerHTML + "▼");   
+	        annTool.layers[currLayerPos].featureInfo["purpose"] = this.innerHTML;
+	        setupInfoPanel(currLayerPos);
+	    }
     });
 
     $(document.body).on('click', '.symbol-shape-menu li a', function (e) {
         //var selText = $(this).text(); 
         var currLayerPos = document.getElementById("curr_layer_pos").value;
-        $('#symbol-shape-menu_btn').text(this.innerHTML + "▼");   
-        annTool.layers[currLayerPos].featureInfo["shape"] = this.innerHTML;
-        setupInfoPanel(currLayerPos);
+        var tmp_type = this.innerHTML;
+        if (this.innerHTML == "Other" || this.innerHTML == "other"){
+            	type = prompt("enter symbol shape:");
+            	if (type != undefined){
+                	FT_user_defined_line_purpose_strings.push(type);
+                	$('#symbol-shape-menu_btn').text(this.innerHTML + "▼");   
+        			annTool.layers[currLayerPos].featureInfo["shape"] = type;
+            	}
+
+        }
+        else{
+	        $('#symbol-shape-menu_btn').text(this.innerHTML + "▼");   
+	        annTool.layers[currLayerPos].featureInfo["shape"] = this.innerHTML;
+	        setupInfoPanel(currLayerPos);
+	    }
     });
  
     $(document.body).on('click', '.symbol-purpose-menu li a', function (e) {
